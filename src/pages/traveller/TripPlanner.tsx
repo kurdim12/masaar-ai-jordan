@@ -95,7 +95,40 @@ export default function TripPlanner() {
             </div>
             <div className="flex gap-2">
               <button onClick={() => setStage("pick")} className="btn-ghost-sand flex-1">{t("تعديل", "Edit")}</button>
-              <button className="btn-primary flex-1">{t("حفظ ومشاركة", "Save & Share")}</button>
+              <button
+                onClick={() => {
+                  localStorage.setItem("masaar_itinerary", JSON.stringify(itinerary));
+                  toast.success(t("تم حفظ الجدول!", "Itinerary saved!"));
+                }}
+                className="btn-ghost-sand flex-1"
+              >
+                💾 {t("حفظ", "Save")}
+              </button>
+              <button
+                onClick={async () => {
+                  const text = itinerary
+                    .map((d, i) => `${t(`اليوم ${i + 1}`, `Day ${i + 1}`)}\n${t(d.ar, d.en)}`)
+                    .join("\n\n");
+                  const shareData = {
+                    title: t("جدول رحلتي — مسار", "My Jordan Itinerary — Masaar"),
+                    text,
+                    url: window.location.href,
+                  };
+                  try {
+                    if (navigator.share) {
+                      await navigator.share(shareData);
+                    } else {
+                      await navigator.clipboard.writeText(`${text}\n\n${window.location.href}`);
+                      toast.success(t("تم النسخ إلى الحافظة!", "Copied to clipboard!"));
+                    }
+                  } catch {
+                    /* user cancelled */
+                  }
+                }}
+                className="btn-primary flex-1"
+              >
+                {t("مشاركة", "Share")} ↗
+              </button>
             </div>
           </>
         )}
