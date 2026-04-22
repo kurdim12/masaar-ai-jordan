@@ -31,13 +31,62 @@ export default function BusinessAnalytics() {
     <AppShell>
       <AppHeader title={t("تحليلات مشروعك","Business Analytics")} />
       <div className="px-4 pt-4 space-y-4">
-        <div className="flex gap-2">
-          {(["week","month","year"] as const).map(p => (
-            <button key={p} onClick={()=>setPeriod(p)} className={`chip flex-1 justify-center ${period===p?"chip-active":""}`}>
-              {t({week:"الأسبوع",month:"الشهر",year:"السنة"}[p], {week:"Week",month:"Month",year:"Year"}[p])}
+        <div className="flex gap-2 overflow-x-auto scrollbar-none">
+          {(["week","month","year","forecast"] as const).map(p => (
+            <button key={p} onClick={()=>setPeriod(p)} className={`chip flex-1 justify-center whitespace-nowrap ${period===p?"chip-active":""}`}>
+              {t({week:"الأسبوع",month:"الشهر",year:"السنة",forecast:"التوقعات"}[p], {week:"Week",month:"Month",year:"Year",forecast:"Forecast"}[p])}
             </button>
           ))}
         </div>
+
+        {period === "forecast" ? (
+          <div className="space-y-4">
+            <div className="bg-primary text-primary-foreground rounded-2xl p-4">
+              <div className="text-xs text-tertiary tracking-widest uppercase">{t("توقع الذكاء الاصطناعي","AI Demand Forecast")}</div>
+              <div className="font-display text-xl mt-1">{t("الـ 90 يوماً القادمة","Next 90 Days")}</div>
+              <p className="text-xs text-white/70 mt-1">{t("بناءً على أنماط السياحة الإقليمية وموقعك","Based on regional tourism patterns and your location")}</p>
+            </div>
+
+            <div className="card-masaar p-4">
+              <h4 className="font-display text-sm mb-2">{t("الطلب المتوقع","Expected Demand")} — {businessLocation}</h4>
+              <ResponsiveContainer width="100%" height={180}>
+                <AreaChart data={businessForecast}>
+                  <defs>
+                    <linearGradient id="bizForecast" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(17, 46%, 47%)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="hsl(17, 46%, 47%)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="week" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <Tooltip />
+                  <Area type="monotone" dataKey="demand" stroke="hsl(17, 46%, 47%)" strokeWidth={2} fill="url(#bizForecast)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="card-masaar p-4">
+              <p className="text-xs font-bold uppercase text-secondary">📈 {t("نافذة طلب مرتفع","High Demand Window")}</p>
+              <p className="font-display text-base mt-1">{t("15 مارس — 10 أبريل","March 15 — April 10")}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("إشغال متوقع 85%. فكر برفع الأسعار 15–20% واشتراط ليلتين كحد أدنى.","Expected 85% occupancy. Consider raising prices 15-20% and requiring minimum 2-night stay.")}</p>
+            </div>
+
+            <div className="card-masaar p-4">
+              <p className="text-xs font-bold uppercase text-tertiary">⚡ {t("نافذة عرض سريع","Flash Offer Window")}</p>
+              <p className="font-display text-base mt-1">{t("20 يناير — 5 فبراير","January 20 — February 5")}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("انخفاض في الموسم. أطلق عروض سريعة مبكراً لجذب المسافرين بميزانية محدودة.","Low season dip expected. Launch flash offers 2 weeks early to capture budget travellers.")}</p>
+            </div>
+
+            <div className="card-masaar p-4">
+              <p className="text-xs font-bold uppercase" style={{color:"hsl(170, 47%, 33%)"}}>🎯 {t("الجمهور المستهدف","Target Audience")}</p>
+              <p className="font-display text-base mt-1">{t("سياح علاج أوروبيون","European Medical Tourists")}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("التوقعات تظهر زيادة 18% في الزوار الأوروبيين المهتمين بالعافية. فكر بحزم العافية.","Forecast shows 18% increase in wellness-focused European visitors. Consider wellness packages.")}</p>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+        {period !== "forecast" && (<></>)}
 
         <div className="card-masaar p-4">
           <h3 className="font-display mb-2">{t("اتجاه الإشغال","Occupancy Trend")}</h3>
