@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { clearAllDemoKeys, isDemoMode } from "@/lib/demo";
+import { supabase } from "@/integrations/supabase/client";
 
 const roleLabel = (u: string | null) => {
   if (u === "traveller") return { ar: "سائح", en: "Traveller" };
@@ -17,6 +19,15 @@ export default function Profile() {
   const nav = useNavigate();
   const role = roleLabel(userType);
   const demo = isDemoMode();
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user.email ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setEmail(s?.user.email ?? null));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const isAuthed = !!email;
 
   const switchRole = () => {
     ["masaar.userType", "masaar.ip", "masaar.bp", "masaar.tp", "masaar.locale", "masaar.offers"].forEach((k) =>
@@ -26,6 +37,17 @@ export default function Profile() {
     clearUserType();
     toast.success(t("اختر دوراً جديداً", "Pick a new role"));
     nav("/path");
+  };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    ["masaar.userType", "masaar.ip", "masaar.bp", "masaar.tp", "masaar.locale", "masaar.offers", "masaar_role"].forEach((k) =>
+      localStorage.removeItem(k)
+    );
+    clearAllDemoKeys();
+    clearUserType();
+    toast.success(t("تم تسجيل الخروج", "Signed out"));
+    nav("/path", { replace: true });
   };
 
   return (
@@ -38,7 +60,9 @@ export default function Profile() {
             M
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-display text-[18px] text-primary">{t("مرحباً بك", "Welcome")}</div>
+            <div className="font-display text-[18px] text-primary truncate">
+              {email || t("مرحباً بك", "Welcome")}
+            </div>
             <div className="flex flex-wrap items-center gap-2 mt-1">
               <span className="text-[11px] tracking-wider uppercase font-semibold px-2 py-0.5 rounded-full"
                 style={{ background: "hsl(var(--surface-cream))", color: "hsl(var(--secondary))" }}>
@@ -55,6 +79,38 @@ export default function Profile() {
             </div>
           </div>
         </div>
+
+        {/* Account section */}
+        <section className="space-y-3">
+          <h2 className="font-display text-[16px] text-primary font-semibold">{t("الحساب", "Account")}</h2>
+          {isAuthed ? (
+            <button
+              onClick={logout}
+              className="card-clean w-full flex items-center justify-between text-start"
+            >
+              <div>
+                <div className="text-[14px] font-medium text-primary">{t("تسجيل الخروج", "Sign out")}</div>
+                <div className="text-[12px] text-muted-foreground mt-0.5">
+                  {t("سيتم إنهاء جلستك", "End your session on this device")}
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-muted-foreground">logout</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => nav("/auth?mode=login")}
+              className="card-clean w-full flex items-center justify-between text-start"
+            >
+              <div>
+                <div className="text-[14px] font-medium text-primary">{t("تسجيل الدخول", "Sign in")}</div>
+                <div className="text-[12px] text-muted-foreground mt-0.5">
+                  {t("احفظ بياناتك عبر الأجهزة", "Save your data across devices")}
+                </div>
+              </div>
+              <span className="material-symbols-outlined text-muted-foreground">login</span>
+            </button>
+          )}
+        </section>
 
         {/* AI status */}
         <div className="card-clean">

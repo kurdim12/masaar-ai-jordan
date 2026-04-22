@@ -63,7 +63,16 @@ export default function ChoosePath() {
             <div className="font-display text-base font-semibold tracking-[0.18em]">JORDAN</div>
             <div className="text-[10px] text-muted-foreground tracking-[0.3em]">INTELLIGENCE</div>
           </div>
-          <LocaleToggle />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => nav("/auth?mode=login")}
+              className="text-xs font-semibold px-3 py-1.5 rounded-full"
+              style={{ background: "white", border: "1px solid rgba(200,168,130,0.4)", color: "#0f1c2c" }}
+            >
+              {t("تسجيل الدخول", "Sign in")}
+            </button>
+            <LocaleToggle />
+          </div>
         </header>
 
         <div className="mb-7 animate-fade-in">
@@ -86,7 +95,7 @@ export default function ChoosePath() {
             return (
               <div key={c.type} className="space-y-2 animate-fade-in" style={{ animationDelay: `${idx * 80}ms` }}>
                 <button
-                  onClick={() => { localStorage.setItem("masaar_role", c.type); setUserType(c.type); nav(c.route); }}
+                  onClick={() => nav(`/auth?mode=signup&role=${c.type}`)}
                   className="group relative w-full overflow-hidden rounded-2xl text-start min-h-[220px] shadow-card"
                 >
                   <img src={c.img} alt={t(c.titleAr, c.titleEn)} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />

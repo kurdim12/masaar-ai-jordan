@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type Locale = "en" | "ar";
 export type UserType = "traveller" | "investor" | "business" | null;
@@ -124,6 +125,38 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => { localStorage.setItem("masaar.offers", JSON.stringify(offers)); }, [offers]);
   useEffect(() => { localStorage.setItem("masaar.gemini", geminiKey); }, [geminiKey]);
   useEffect(() => { localStorage.setItem("masaar.tenders", JSON.stringify(notifyTenders)); }, [notifyTenders]);
+
+  // Sync session → userType. Listener FIRST, then getSession (Supabase pattern).
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_evt, session) => {
+      if (!session) return;
+      // Defer DB call to avoid Supabase auth deadlock
+      setTimeout(async () => {
+        const { data } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+        if (data?.role) {
+          setUserTypeRaw(data.role as UserType);
+          localStorage.setItem("masaar_role", data.role);
+        }
+      }, 0);
+    });
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) return;
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.session.user.id)
+        .maybeSingle();
+      if (roles?.role) {
+        setUserTypeRaw(roles.role as UserType);
+        localStorage.setItem("masaar_role", roles.role);
+      }
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   const t = (ar: string, en: string) => (locale === "ar" ? ar : en);
   const setLocale = (l: Locale) => setLocaleRaw(l);
