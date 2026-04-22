@@ -2,66 +2,92 @@ import { useApp } from "@/context/AppContext";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+
+const roleLabel = (u: string | null) => {
+  if (u === "traveller") return { ar: "سائح", en: "Traveller" };
+  if (u === "investor") return { ar: "مستثمر", en: "Investor" };
+  if (u === "business") return { ar: "صاحب أعمال", en: "Business Owner" };
+  return { ar: "زائر", en: "Guest" };
+};
 
 export default function Profile() {
-  const { t, userType, setUserType, geminiKey, setGeminiKey } = useApp();
+  const { t, userType, clearUserType, geminiKey, setGeminiKey } = useApp();
   const nav = useNavigate();
-  const switchTo = (u: "traveller" | "investor" | "business") => {
-    setUserType(u);
-    nav(u === "traveller" ? "/traveller/discover" : u === "investor" ? "/investor/map" : "/business/dashboard");
+  const role = roleLabel(userType);
+
+  const switchRole = () => {
+    localStorage.removeItem("masaar_role");
+    clearUserType();
+    toast.success(t("اختر دوراً جديداً", "Pick a new role"));
+    nav("/path");
   };
+
   return (
     <AppShell>
       <AppHeader title={t("ملفي", "Profile")} />
-      <div className="px-4 pt-5 space-y-5">
-        <div className="card-masaar p-5 flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-gradient-gold flex items-center justify-center font-display text-2xl text-primary">M</div>
-          <div>
-            <div className="font-display text-lg">{t("مرحباً بك", "Welcome")}</div>
-            <div className="text-xs text-muted-foreground capitalize">{userType}</div>
+      <div className="px-6 pt-6 pb-10 space-y-8">
+        {/* Identity */}
+        <div className="card-clean flex items-center gap-4">
+          <div className="w-14 h-14 rounded-full bg-gradient-gold flex items-center justify-center font-display text-2xl text-primary">
+            M
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-display text-[18px] text-primary">{t("مرحباً بك", "Welcome")}</div>
+            <span className="inline-block mt-1 text-[11px] tracking-wider uppercase font-semibold px-2 py-0.5 rounded-full"
+              style={{ background: "hsl(var(--surface-cream))", color: "hsl(var(--secondary))" }}>
+              {t(role.ar, role.en)}
+            </span>
           </div>
         </div>
 
-        <section>
-          <h3 className="font-display text-lg mb-2">{t("بدّل دورك", "Switch Role")}</h3>
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              { k: "traveller" as const, ar: "سائح", en: "Traveller", i: "explore" },
-              { k: "investor" as const, ar: "مستثمر", en: "Investor", i: "insights" },
-              { k: "business" as const, ar: "أعمال", en: "Business", i: "hotel" },
-            ].map(r => (
-              <button key={r.k} onClick={() => switchTo(r.k)}
-                className={`card-masaar p-3 text-center ${userType === r.k ? "ring-2 ring-primary" : ""}`}>
-                <span className="material-symbols-outlined text-secondary">{r.i}</span>
-                <div className="text-xs mt-1 font-medium">{t(r.ar, r.en)}</div>
-              </button>
-            ))}
-          </div>
+        {/* Switch role */}
+        <section className="space-y-3">
+          <h2 className="font-display text-[16px] text-primary font-semibold">{t("الدور", "Role")}</h2>
+          <button onClick={switchRole} className="card-clean w-full flex items-center justify-between text-start">
+            <div>
+              <div className="text-[14px] font-medium text-primary">{t("تغيير الدور", "Switch Role")}</div>
+              <div className="text-[12px] text-muted-foreground mt-0.5">
+                {t("ابدأ من جديد كسائح أو مستثمر أو صاحب أعمال", "Start fresh as traveller, investor or business owner")}
+              </div>
+            </div>
+            <span className="material-symbols-outlined text-muted-foreground">chevron_right</span>
+          </button>
         </section>
 
-        <section>
-          <h3 className="font-display text-lg mb-2">{t("مفتاح Gemini AI", "Gemini AI Key")}</h3>
-          <div className="card-masaar p-4 space-y-2">
-            <p className="text-xs text-muted-foreground leading-snug">
-              {t("ألصق مفتاحك من Google AI Studio لتفعيل ردود الذكاء الاصطناعي الكاملة. الردود تعمل بدون مفتاح أيضاً (وضع تجريبي).",
-                 "Paste your key from Google AI Studio to enable full AI responses. Replies still work without a key (demo mode).")}
+        {/* About */}
+        <section className="space-y-3">
+          <h2 className="font-display text-[16px] text-primary font-semibold">{t("معلومات", "Information")}</h2>
+          <button onClick={() => nav("/about")} className="card-clean w-full flex items-center justify-between text-start">
+            <div>
+              <div className="text-[14px] font-medium text-primary">{t("عن مسار وخارطة الطريق", "About & Roadmap")}</div>
+              <div className="text-[12px] text-muted-foreground mt-0.5">
+                {t("الإصدار، المراحل، والفريق", "Version, phases, and team")}
+              </div>
+            </div>
+            <span className="material-symbols-outlined text-muted-foreground">chevron_right</span>
+          </button>
+        </section>
+
+        {/* Gemini key */}
+        <section className="space-y-3">
+          <h2 className="font-display text-[16px] text-primary font-semibold">{t("مفتاح Gemini AI", "Gemini AI Key")}</h2>
+          <div className="card-clean space-y-2">
+            <p className="text-[13px] text-muted-foreground leading-snug">
+              {t(
+                "ألصق مفتاحك من Google AI Studio لتفعيل ردود الذكاء الاصطناعي الكاملة.",
+                "Paste your key from Google AI Studio to enable full AI responses."
+              )}
             </p>
-            <input value={geminiKey} onChange={e => setGeminiKey(e.target.value)} type="password"
-              placeholder="AIza…" className="w-full bg-muted rounded-lg px-3 py-2 text-sm outline-none" />
+            <input
+              value={geminiKey}
+              onChange={e => setGeminiKey(e.target.value)}
+              type="password"
+              placeholder="AIza…"
+              className="w-full bg-muted rounded-lg px-3 py-2 text-[13px] outline-none"
+            />
           </div>
         </section>
-
-        <section>
-          <h3 className="font-display text-lg mb-2">{t("عن مسار", "About Masaar")}</h3>
-          <div className="card-masaar p-4 text-sm text-muted-foreground leading-relaxed">
-            {t("مسار منصة ذكاء سياحي للأردن تجمع السياح والمستثمرين وأصحاب المشاريع في مكان واحد، مدعومة بالذكاء الاصطناعي.",
-               "Masaar is a Jordan tourism intelligence platform connecting travellers, investors, and business owners — powered by AI.")}
-          </div>
-        </section>
-
-        <button onClick={() => { setUserType(null); nav("/path"); }} className="btn-ghost-sand w-full">
-          {t("تسجيل الخروج", "Log out")}
-        </button>
       </div>
     </AppShell>
   );

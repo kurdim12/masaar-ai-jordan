@@ -51,6 +51,7 @@ interface AppCtx {
   t: (ar: string, en: string) => string;
   userType: UserType;
   setUserType: (u: UserType) => void;
+  clearUserType: () => void;
   travellerProfile: TravellerProfile;
   setTravellerProfile: (p: TravellerProfile) => void;
   investorProfile: InvestorProfile;
@@ -116,7 +117,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, []); // eslint-disable-line
 
   useEffect(() => { localStorage.setItem("masaar.locale", locale); document.documentElement.dir = locale === "ar" ? "rtl" : "ltr"; document.documentElement.lang = locale; }, [locale]);
-  useEffect(() => { if (userType) localStorage.setItem("masaar.userType", userType); }, [userType]);
+  useEffect(() => { if (userType) localStorage.setItem("masaar.userType", userType); else localStorage.removeItem("masaar.userType"); }, [userType]);
   useEffect(() => { localStorage.setItem("masaar.tp", JSON.stringify(travellerProfile)); }, [travellerProfile]);
   useEffect(() => { localStorage.setItem("masaar.ip", JSON.stringify(investorProfile)); }, [investorProfile]);
   useEffect(() => { localStorage.setItem("masaar.bp", JSON.stringify(businessProfile)); }, [businessProfile]);
@@ -127,6 +128,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const t = (ar: string, en: string) => (locale === "ar" ? ar : en);
   const setLocale = (l: Locale) => setLocaleRaw(l);
   const setUserType = (u: UserType) => setUserTypeRaw(u);
+  const clearUserType = () => { localStorage.removeItem("masaar.userType"); setUserTypeRaw(null); };
   const setGeminiKey = (k: string) => setGeminiKeyRaw(k);
   const addOffer = (o: FlashOffer) => setOffers(prev => [o, ...prev]);
   const pushNotification = (n: { titleAr: string; titleEn: string }) =>
@@ -136,7 +138,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <Ctx.Provider value={{
-      locale, setLocale, t, userType, setUserType,
+      locale, setLocale, t, userType, setUserType, clearUserType,
       travellerProfile, setTravellerProfile,
       investorProfile, setInvestorProfile,
       businessProfile, setBusinessProfile,

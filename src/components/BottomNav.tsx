@@ -6,43 +6,57 @@ export const BottomNav = () => {
   const loc = useLocation();
   if (!userType) return null;
 
-  const base = userType === "traveller" ? "/traveller" : userType === "investor" ? "/investor" : "/business";
-  const items = userType === "business"
-    ? [
-        { to: `${base}/dashboard`, icon: "dashboard", ar: "لوحتي", en: "Dashboard" },
-        { to: `${base}/analytics`, icon: "analytics", ar: "تحليلات", en: "Analytics" },
-        { to: `${base}/chat`, icon: "auto_awesome", ar: "الذكاء", en: "AI" },
-        { to: `${base}/profile`, icon: "person", ar: "ملفي", en: "Profile" },
-      ]
-    : userType === "investor"
-    ? [
-        { to: `${base}/map`, icon: "explore", ar: "الفرص", en: "Opportunities" },
-        { to: `${base}/tenders`, icon: "gavel", ar: "العطاءات", en: "Tenders" },
-        { to: `${base}/chat`, icon: "auto_awesome", ar: "الذكاء", en: "AI" },
-        { to: `${base}/profile`, icon: "person", ar: "ملفي", en: "Profile" },
-      ]
-    : [
-        { to: `${base}/discover`, icon: "explore", ar: "اكتشف", en: "Discover" },
-        { to: `${base}/map`, icon: "map", ar: "الخريطة", en: "Map" },
-        { to: `${base}/chat`, icon: "auto_awesome", ar: "الذكاء", en: "AI" },
-        { to: `${base}/profile`, icon: "person", ar: "ملفي", en: "Profile" },
-      ];
+  const items =
+    userType === "business"
+      ? [
+          { to: "/business/dashboard", icon: "dashboard", ar: "لوحتي", en: "Dashboard" },
+          { to: "/business/analytics", icon: "analytics", ar: "تحليلات", en: "Analytics" },
+          { to: "/business/chat", icon: "auto_awesome", ar: "الذكاء", en: "AI" },
+          { to: "/business/profile", icon: "person", ar: "ملفي", en: "Profile" },
+        ]
+      : userType === "investor"
+      ? [
+          { to: "/investor/map", icon: "explore", ar: "الفرص", en: "Opportunities" },
+          { to: "/investor/forecast", icon: "show_chart", ar: "التوقعات", en: "Forecast" },
+          { to: "/investor/tenders", icon: "gavel", ar: "العطاءات", en: "Tenders" },
+          { to: "/investor/profile", icon: "person", ar: "ملفي", en: "Profile" },
+        ]
+      : [
+          { to: "/traveller/discover", icon: "explore", ar: "اكتشف", en: "Discover" },
+          { to: "/traveller/chat", icon: "auto_awesome", ar: "الذكاء", en: "AI Chat" },
+          { to: "/traveller/plan", icon: "event_note", ar: "خطة", en: "Trip Planner" },
+          { to: "/traveller/profile", icon: "person", ar: "ملفي", en: "Profile" },
+        ];
 
   return (
     <nav
-      className="fixed bottom-0 inset-x-0 z-40 glass border-t border-border/40 pb-[env(safe-area-inset-bottom)]"
-      style={{ background: "hsl(var(--nav-surface) / 0.85)" }}
+      className="fixed bottom-0 inset-x-0 z-40 pb-[env(safe-area-inset-bottom)]"
+      style={{
+        background: "#ffffff",
+        borderTop: "1px solid hsl(var(--border) / 0.15)",
+      }}
     >
-      <div className="max-w-md mx-auto grid grid-cols-4">
+      <div className="max-w-md mx-auto grid grid-cols-4 h-16">
         {items.map(it => {
           const active = loc.pathname.startsWith(it.to);
           return (
-            <NavLink key={it.to} to={it.to} className="flex flex-col items-center justify-center py-2.5 gap-0.5">
+            <NavLink key={it.to} to={it.to} className="flex flex-col items-center justify-center gap-0.5">
               <span
-                className={`material-symbols-outlined transition-all ${active ? "text-primary" : "text-muted-foreground"}`}
-                style={{ fontSize: 24, fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}
-              >{it.icon}</span>
-              <span className={`text-[10px] font-medium ${active ? "text-primary" : "text-muted-foreground"}`}>{t(it.ar, it.en)}</span>
+                className="material-symbols-outlined transition-all"
+                style={{
+                  fontSize: 24,
+                  color: active ? "hsl(var(--secondary))" : "hsl(var(--muted-foreground) / 0.5)",
+                  fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0",
+                }}
+              >
+                {it.icon}
+              </span>
+              <span
+                className="text-[10px] font-medium"
+                style={{ color: active ? "hsl(var(--secondary))" : "hsl(var(--muted-foreground) / 0.5)" }}
+              >
+                {t(it.ar, it.en)}
+              </span>
             </NavLink>
           );
         })}

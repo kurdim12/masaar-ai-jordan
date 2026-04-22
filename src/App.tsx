@@ -4,12 +4,14 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider } from "@/context/AppContext";
+import { RoleGuard } from "@/components/RoleGuard";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Splash from "./pages/Splash";
 import Onboarding from "./pages/Onboarding";
 import ChoosePath from "./pages/ChoosePath";
 import Profile from "./pages/Profile";
+import About from "./pages/About";
 
 import TravellerOnboarding from "./pages/traveller/TravellerOnboarding";
 import TravellerDiscover from "./pages/traveller/TravellerDiscover";
@@ -19,10 +21,10 @@ import TripPlanner from "./pages/traveller/TripPlanner";
 import TravellerChat from "./pages/traveller/TravellerChat";
 
 import InvestorMap from "./pages/investor/InvestorMap";
+import InvestorForecast from "./pages/investor/InvestorForecast";
 import OpportunityDetail from "./pages/investor/OpportunityDetail";
 import InvestmentSimulator from "./pages/investor/InvestmentSimulator";
 import Tenders from "./pages/investor/Tenders";
-import InvestorChat from "./pages/investor/InvestorChat";
 
 import BusinessOnboarding from "./pages/business/BusinessOnboarding";
 import BusinessDashboard from "./pages/business/BusinessDashboard";
@@ -32,6 +34,10 @@ import BusinessAnalytics from "./pages/business/BusinessAnalytics";
 import BusinessChat from "./pages/business/BusinessChat";
 
 const queryClient = new QueryClient();
+
+const T = ({ children }: { children: React.ReactNode }) => <RoleGuard allow="traveller">{children}</RoleGuard>;
+const I = ({ children }: { children: React.ReactNode }) => <RoleGuard allow="investor">{children}</RoleGuard>;
+const B = ({ children }: { children: React.ReactNode }) => <RoleGuard allow="business">{children}</RoleGuard>;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -45,29 +51,30 @@ const App = () => (
             <Route path="/splash" element={<Splash />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/path" element={<ChoosePath />} />
+            <Route path="/about" element={<About />} />
 
             <Route path="/traveller/onboarding" element={<TravellerOnboarding />} />
-            <Route path="/traveller/discover" element={<TravellerDiscover />} />
-            <Route path="/traveller/map" element={<TravellerMap />} />
-            <Route path="/traveller/destination/:id" element={<GovernorateDetail />} />
-            <Route path="/traveller/plan" element={<TripPlanner />} />
-            <Route path="/traveller/chat" element={<TravellerChat />} />
-            <Route path="/traveller/profile" element={<Profile />} />
+            <Route path="/traveller/discover" element={<T><TravellerDiscover /></T>} />
+            <Route path="/traveller/map" element={<T><TravellerMap /></T>} />
+            <Route path="/traveller/destination/:id" element={<T><GovernorateDetail /></T>} />
+            <Route path="/traveller/plan" element={<T><TripPlanner /></T>} />
+            <Route path="/traveller/chat" element={<T><TravellerChat /></T>} />
+            <Route path="/traveller/profile" element={<T><Profile /></T>} />
 
-            <Route path="/investor/map" element={<InvestorMap />} />
-            <Route path="/investor/opportunity/:id" element={<OpportunityDetail />} />
-            <Route path="/investor/simulator" element={<InvestmentSimulator />} />
-            <Route path="/investor/tenders" element={<Tenders />} />
-            <Route path="/investor/chat" element={<InvestorChat />} />
-            <Route path="/investor/profile" element={<Profile />} />
+            <Route path="/investor/map" element={<I><InvestorMap /></I>} />
+            <Route path="/investor/forecast" element={<I><InvestorForecast /></I>} />
+            <Route path="/investor/opportunity/:id" element={<I><OpportunityDetail /></I>} />
+            <Route path="/investor/simulator" element={<I><InvestmentSimulator /></I>} />
+            <Route path="/investor/tenders" element={<I><Tenders /></I>} />
+            <Route path="/investor/profile" element={<I><Profile /></I>} />
 
             <Route path="/business/onboarding" element={<BusinessOnboarding />} />
-            <Route path="/business/dashboard" element={<BusinessDashboard />} />
-            <Route path="/business/offer" element={<FlashOffer />} />
-            <Route path="/business/emergency" element={<EmergencyOffer />} />
-            <Route path="/business/analytics" element={<BusinessAnalytics />} />
-            <Route path="/business/chat" element={<BusinessChat />} />
-            <Route path="/business/profile" element={<Profile />} />
+            <Route path="/business/dashboard" element={<B><BusinessDashboard /></B>} />
+            <Route path="/business/offer" element={<B><FlashOffer /></B>} />
+            <Route path="/business/emergency" element={<B><EmergencyOffer /></B>} />
+            <Route path="/business/analytics" element={<B><BusinessAnalytics /></B>} />
+            <Route path="/business/chat" element={<B><BusinessChat /></B>} />
+            <Route path="/business/profile" element={<B><Profile /></B>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>

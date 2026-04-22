@@ -25,6 +25,17 @@ export default function Tenders() {
             <button key={x.id} onClick={() => setF(x.id)} className={`chip ${f === x.id ? "chip-active" : ""}`}>{t(x.ar, x.en)}</button>
           ))}
         </div>
+        {list.length === 0 ? (
+          <div className="text-center py-12">
+            <span style={{ fontSize: 32 }}>📋</span>
+            <p className="font-display text-[18px] text-primary mt-3">
+              {t("لا توجد عطاءات في هذا التصنيف", "No tenders match this filter")}
+            </p>
+            <p className="text-[13px] text-muted-foreground mt-2">
+              {t("جرّب تصنيفاً آخر أو عُد لاحقاً", "Try a different category or check back soon")}
+            </p>
+          </div>
+        ) : (
         <div className="mt-4 space-y-3">
           {list.map(td => {
             const on = notifyTenders.includes(td.id);
@@ -51,6 +62,7 @@ export default function Tenders() {
             );
           })}
         </div>
+        )}
       </div>
     </AppShell>
   );

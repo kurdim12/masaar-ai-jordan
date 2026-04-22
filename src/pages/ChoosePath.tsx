@@ -59,7 +59,7 @@ export default function ChoosePath() {
           {cards.map((c, idx) => (
             <button
               key={c.type}
-              onClick={() => { setUserType(c.type); nav(c.route); }}
+              onClick={() => { localStorage.setItem("masaar_role", c.type); setUserType(c.type); nav(c.route); }}
               className="group relative w-full overflow-hidden rounded-2xl text-start min-h-[220px] shadow-card animate-fade-in"
               style={{ animationDelay: `${idx * 80}ms` }}
             >
