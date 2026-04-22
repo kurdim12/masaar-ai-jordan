@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
+import { Area, AreaChart, Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { getActiveDemoOffers, type DemoOffer } from "@/lib/demo";
+import { businessForecast, governorates } from "@/data/jordan";
 
 const insights = [
   { ar: "الطلب مرتفع الأسبوع القادم — فكّر في رفع أسعارك 15%", en: "High demand next week — consider raising prices 15%" },
