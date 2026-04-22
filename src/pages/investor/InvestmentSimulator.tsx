@@ -20,20 +20,35 @@ export default function InvestmentSimulator() {
   const [investment, setInvestment] = useState(500000);
   const [loc, setLoc] = useState("wadi_rum");
   const [years, setYears] = useState(10);
-  const [result, setResult] = useState<null | { revLow: number; revHigh: number; bep: number; roi: number }>(null);
+  const [result, setResult] = useState<null | { revenue: number; revLow: number; revHigh: number; bep: number; roi: number; occupancy: number; projection: { year: string; revenue: number; cumulative: number }[]; aiRec: string }>(null);
 
   const calc = () => {
     const t0 = types.find(x => x.id === type)!;
     const g = governorates.find(x => x.id === loc)!;
     const nightly = t0.avg || g.avgNight;
     const occ = g.occupancy / 100;
-    const annualLow = Math.round(units * nightly * 365 * occ * 0.55);
-    const annualHigh = Math.round(units * nightly * 365 * occ * 0.85);
-    const annualMid = (annualLow + annualHigh) / 2;
+    const annualMid = Math.round(units * nightly * 365 * occ * 0.7);
+    const annualLow = Math.round(annualMid * 0.78);
+    const annualHigh = Math.round(annualMid * 1.21);
     const profit = annualMid * 0.4;
     const bep = +(investment / profit).toFixed(1);
     const roi = Math.round(((profit * years) / investment) * 100);
-    setResult({ revLow: annualLow, revHigh: annualHigh, bep, roi });
+
+    const projection = Array.from({ length: years }, (_, i) => {
+      const yr = i + 1;
+      const growth = Math.pow(1.06, i); // 6% YoY growth
+      const rev = Math.round(annualMid * growth);
+      const cumulative = Math.round(annualMid * ((Math.pow(1.06, yr) - 1) / 0.06));
+      return { year: `Y${yr}`, revenue: rev, cumulative };
+    });
+
+    const aiRec = roi > 250
+      ? `Strong opportunity. Projected ROI of ${roi}% over ${years} years significantly outperforms the regional average. Consider scaling units after Year 3 to capture rising demand in ${t(g.nameAr, g.nameEn)}.`
+      : roi > 120
+      ? `Solid investment with ${roi}% ROI over ${years} years. ${t(g.nameAr, g.nameEn)} shows ${g.growth}% YoY growth. Optimize pricing during peak season (${g.bestTime}) to improve returns.`
+      : `Modest return at ${roi}% ROI. Consider increasing units or selecting a higher-opportunity location like Wadi Rum or Dead Sea for better forecasted demand.`;
+
+    setResult({ revenue: annualMid, revLow: annualLow, revHigh: annualHigh, bep, roi, occupancy: g.occupancy, projection, aiRec });
   };
 
   return (
