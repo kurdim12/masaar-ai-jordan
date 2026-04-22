@@ -19,6 +19,15 @@ export default function Profile() {
   const nav = useNavigate();
   const role = roleLabel(userType);
   const demo = isDemoMode();
+  const [email, setEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user.email ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setEmail(s?.user.email ?? null));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  const isAuthed = !!email;
 
   const switchRole = () => {
     ["masaar.userType", "masaar.ip", "masaar.bp", "masaar.tp", "masaar.locale", "masaar.offers"].forEach((k) =>
@@ -28,6 +37,17 @@ export default function Profile() {
     clearUserType();
     toast.success(t("اختر دوراً جديداً", "Pick a new role"));
     nav("/path");
+  };
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    ["masaar.userType", "masaar.ip", "masaar.bp", "masaar.tp", "masaar.locale", "masaar.offers", "masaar_role"].forEach((k) =>
+      localStorage.removeItem(k)
+    );
+    clearAllDemoKeys();
+    clearUserType();
+    toast.success(t("تم تسجيل الخروج", "Signed out"));
+    nav("/path", { replace: true });
   };
 
   return (
