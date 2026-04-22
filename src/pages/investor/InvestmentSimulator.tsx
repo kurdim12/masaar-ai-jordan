@@ -3,6 +3,7 @@ import { useApp } from "@/context/AppContext";
 import { governorates } from "@/data/jordan";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
+import { Line, LineChart, ResponsiveContainer, Tooltip as RTooltip, XAxis, YAxis } from "recharts";
 
 const types = [
   { id: "hotel3", ar: "فندق 3 نجوم", en: "3-star hotel", avg: 60 },
