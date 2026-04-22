@@ -80,10 +80,10 @@ export default function About() {
                 </h2>
               </div>
               <ul className="space-y-2">
-                {(t === undefined ? p.bulletsEn : (p.bulletsAr.map((a, k) => t(a, p.bulletsEn[k])))).map((b, k) => (
+                {p.bulletsAr.map((ar, k) => (
                   <li key={k} className="text-[13px] text-muted-foreground flex gap-2">
                     <span className="text-secondary">•</span>
-                    <span>{b}</span>
+                    <span>{t(ar, p.bulletsEn[k])}</span>
                   </li>
                 ))}
               </ul>
