@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { clearAllDemoKeys, isDemoMode } from "@/lib/demo";
+import { supabase } from "@/integrations/supabase/client";
 
 const roleLabel = (u: string | null) => {
   if (u === "traveller") return { ar: "سائح", en: "Traveller" };
