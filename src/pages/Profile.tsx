@@ -39,10 +39,20 @@ export default function Profile() {
           </div>
           <div className="flex-1 min-w-0">
             <div className="font-display text-[18px] text-primary">{t("مرحباً بك", "Welcome")}</div>
-            <span className="inline-block mt-1 text-[11px] tracking-wider uppercase font-semibold px-2 py-0.5 rounded-full"
-              style={{ background: "hsl(var(--surface-cream))", color: "hsl(var(--secondary))" }}>
-              {t(role.ar, role.en)}
-            </span>
+            <div className="flex flex-wrap items-center gap-2 mt-1">
+              <span className="text-[11px] tracking-wider uppercase font-semibold px-2 py-0.5 rounded-full"
+                style={{ background: "hsl(var(--surface-cream))", color: "hsl(var(--secondary))" }}>
+                {t(role.ar, role.en)}
+              </span>
+              {demo && (
+                <span
+                  className="px-2 py-0.5 rounded-full"
+                  style={{ background: "#eec058", color: "#0f1c2c", fontSize: 11, fontWeight: 700, fontFamily: "Manrope, system-ui, sans-serif" }}
+                >
+                  {t("تجريبي", "Demo")}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
