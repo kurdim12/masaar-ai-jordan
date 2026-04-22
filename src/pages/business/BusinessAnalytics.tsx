@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
-import { Bar, BarChart, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis } from "recharts";
+import { Area, AreaChart, Bar, BarChart, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { businessForecast, governorates } from "@/data/jordan";
 
 const COLORS = ["hsl(213, 49%, 12%)","hsl(17, 46%, 37%)","hsl(42, 82%, 64%)","hsl(170, 47%, 33%)"];
 
