@@ -14,7 +14,7 @@ const cards = [
   },
   {
     type: "investor" as const, route: "/investor/map",
-    img: "https://images.unsplash.com/photo-1542744095-291d1f67b221?w=900&q=80",
+    img: "https://images.unsplash.com/photo-1586771107445-d3ca888129ff?w=900&q=80",
     icon: "insights", labelAr: "ذكاء", labelEn: "INTELLIGENCE",
     titleAr: "مستثمر", titleEn: "Investor",
     descAr: "اكتشف الفرص الاستثمارية وحلّل السوق السياحي الأردني",
