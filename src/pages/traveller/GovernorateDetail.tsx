@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 import { governorates } from "@/data/jordan";
 import { BarChart, Bar, ResponsiveContainer, XAxis, Tooltip } from "recharts";
+import { getActiveDemoOffers } from "@/lib/demo";
 
 export default function GovernorateDetail() {
   const { id } = useParams();
