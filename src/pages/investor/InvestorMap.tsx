@@ -1,17 +1,22 @@
+import { useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from "react-leaflet";
 import "@/lib/leafletSetup";
 import { useApp } from "@/context/AppContext";
-import { governorates } from "@/data/jordan";
+import { governorates, forecastData, forecastInsights } from "@/data/jordan";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
+import { Area, AreaChart, ResponsiveContainer, Tooltip as RTooltip, XAxis, YAxis } from "recharts";
 
 const oppColor = (o: "high" | "medium" | "low") =>
   o === "high" ? "hsl(17, 46%, 47%)" : o === "medium" ? "hsl(42, 82%, 64%)" : "hsl(170, 47%, 33%)";
 
+const FORECAST_GOVS = ["Wadi Rum", "Petra", "Dead Sea", "Aqaba", "Jerash"];
+
 export default function InvestorMap() {
   const { t, locale } = useApp();
   const nav = useNavigate();
+  const [selectedGov, setSelectedGov] = useState<string>("Wadi Rum");
   const top = [...governorates].sort((a, b) => b.priorityScore - a.priorityScore);
   const topOpp = top[0];
 
@@ -24,7 +29,7 @@ export default function InvestorMap() {
       </div>
 
       <div className="mx-4 mt-3 rounded-2xl overflow-hidden shadow-card border border-border/30 h-[260px]">
-        <MapContainer center={[31.2, 36.3]} zoom={7} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
+        <MapContainer center={[31.5, 36.5]} zoom={7} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
           <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution='&copy; OSM &copy; CARTO' />
           {governorates.map(g => (
             <CircleMarker key={g.id} center={[g.lat, g.lng]}
@@ -76,6 +81,46 @@ export default function InvestorMap() {
               <div className="font-display text-base text-primary">{g.priorityScore}</div>
             </button>
           ))}
+        </div>
+      </section>
+
+      {/* Demand Forecast */}
+      <section className="px-4 mt-6">
+        <h3 className="font-display text-lg">{t("توقع الطلب — 12 شهراً", "Demand Forecast — Next 12 Months")}</h3>
+        <p className="text-xs text-muted-foreground mb-3">{t("توقعات الذكاء الاصطناعي للزوار حسب المحافظة", "AI-projected visitor demand by governorate")}</p>
+
+        <div className="flex gap-2 overflow-x-auto scrollbar-none pb-2">
+          {FORECAST_GOVS.map(g => (
+            <button key={g} onClick={() => setSelectedGov(g)}
+              className={`chip whitespace-nowrap ${selectedGov === g ? "chip-active" : ""}`}>{g}</button>
+          ))}
+        </div>
+
+        <div className="card-masaar p-4 mt-2">
+          <ResponsiveContainer width="100%" height={200}>
+            <AreaChart data={forecastData[selectedGov]}>
+              <defs>
+                <linearGradient id="forecastGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(17, 46%, 47%)" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="hsl(17, 46%, 47%)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="month" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+              <RTooltip />
+              <Area type="monotone" dataKey="visitors" stroke="hsl(17, 46%, 47%)" strokeWidth={2} fill="url(#forecastGrad)" />
+              <Area type="monotone" dataKey="forecast" stroke="hsl(42, 82%, 64%)" strokeWidth={2} strokeDasharray="5 5" fill="none" />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div className="flex gap-4 mt-2 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5" style={{ background: "hsl(17, 46%, 47%)" }} />{t("تاريخي", "Historical")}</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5 border-t border-dashed" style={{ borderColor: "hsl(42, 82%, 64%)" }} />{t("توقع AI", "AI Forecast")}</span>
+          </div>
+        </div>
+
+        <div className="mt-3 bg-primary text-primary-foreground rounded-2xl p-4">
+          <div className="text-xs text-tertiary tracking-widest uppercase">✨ {t("رؤية الذكاء", "AI Insight")}</div>
+          <p className="text-sm mt-1 leading-snug">{t(forecastInsights[selectedGov].ar, forecastInsights[selectedGov].en)}</p>
         </div>
       </section>
 

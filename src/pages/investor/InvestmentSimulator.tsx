@@ -3,6 +3,7 @@ import { useApp } from "@/context/AppContext";
 import { governorates } from "@/data/jordan";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
+import { Line, LineChart, ResponsiveContainer, Tooltip as RTooltip, XAxis, YAxis } from "recharts";
 
 const types = [
   { id: "hotel3", ar: "فندق 3 نجوم", en: "3-star hotel", avg: 60 },
@@ -19,20 +20,35 @@ export default function InvestmentSimulator() {
   const [investment, setInvestment] = useState(500000);
   const [loc, setLoc] = useState("wadi_rum");
   const [years, setYears] = useState(10);
-  const [result, setResult] = useState<null | { revLow: number; revHigh: number; bep: number; roi: number }>(null);
+  const [result, setResult] = useState<null | { revenue: number; revLow: number; revHigh: number; bep: number; roi: number; occupancy: number; projection: { year: string; revenue: number; cumulative: number }[]; aiRec: string }>(null);
 
   const calc = () => {
     const t0 = types.find(x => x.id === type)!;
     const g = governorates.find(x => x.id === loc)!;
     const nightly = t0.avg || g.avgNight;
     const occ = g.occupancy / 100;
-    const annualLow = Math.round(units * nightly * 365 * occ * 0.55);
-    const annualHigh = Math.round(units * nightly * 365 * occ * 0.85);
-    const annualMid = (annualLow + annualHigh) / 2;
+    const annualMid = Math.round(units * nightly * 365 * occ * 0.7);
+    const annualLow = Math.round(annualMid * 0.78);
+    const annualHigh = Math.round(annualMid * 1.21);
     const profit = annualMid * 0.4;
     const bep = +(investment / profit).toFixed(1);
     const roi = Math.round(((profit * years) / investment) * 100);
-    setResult({ revLow: annualLow, revHigh: annualHigh, bep, roi });
+
+    const projection = Array.from({ length: years }, (_, i) => {
+      const yr = i + 1;
+      const growth = Math.pow(1.06, i); // 6% YoY growth
+      const rev = Math.round(annualMid * growth);
+      const cumulative = Math.round(annualMid * ((Math.pow(1.06, yr) - 1) / 0.06));
+      return { year: `Y${yr}`, revenue: rev, cumulative };
+    });
+
+    const aiRec = roi > 250
+      ? `Strong opportunity. Projected ROI of ${roi}% over ${years} years significantly outperforms the regional average. Consider scaling units after Year 3 to capture rising demand in ${t(g.nameAr, g.nameEn)}.`
+      : roi > 120
+      ? `Solid investment with ${roi}% ROI over ${years} years. ${t(g.nameAr, g.nameEn)} shows ${g.growth}% YoY growth. Optimize pricing during peak season (${g.bestTime}) to improve returns.`
+      : `Modest return at ${roi}% ROI. Consider increasing units or selecting a higher-opportunity location like Wadi Rum or Dead Sea for better forecasted demand.`;
+
+    setResult({ revenue: annualMid, revLow: annualLow, revHigh: annualHigh, bep, roi, occupancy: g.occupancy, projection, aiRec });
   };
 
   return (
@@ -79,28 +95,52 @@ export default function InvestmentSimulator() {
         </div>
 
         {result && (
-          <div className="bg-primary text-primary-foreground rounded-2xl p-5 space-y-4 animate-fade-in">
-            <div className="flex items-center gap-2 text-tertiary text-xs tracking-widest uppercase">
-              <span className="material-symbols-outlined text-[18px]">analytics</span>
-              {t("نتائج المحاكاة", "Simulation Results")}
+          <div className="space-y-3 animate-fade-in">
+            <div className="bg-primary text-primary-foreground rounded-2xl p-5 text-center">
+              <div className="text-xs text-tertiary tracking-widest uppercase">{t("الإيراد السنوي المتوقع", "Expected Annual Revenue")}</div>
+              <div className="font-display text-4xl mt-1">{result.revenue.toLocaleString()} <span className="text-base text-white/60">JD</span></div>
+              <div className="text-xs text-white/60 mt-1">{t(`بمعدل إشغال ${result.occupancy}%`, `Based on ${result.occupancy}% average occupancy`)}</div>
             </div>
-            <div>
-              <div className="text-xs text-white/60 mb-1">{t("الإيراد السنوي المتوقع", "Expected Annual Revenue")}</div>
-              <div className="font-display text-2xl">{result.revLow.toLocaleString()} – {result.revHigh.toLocaleString()} <span className="text-sm text-white/60">JD</span></div>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-white/10 rounded-xl p-3">
-                <div className="text-xs text-white/60">{t("نقطة التعادل", "Break-even")}</div>
-                <div className="font-display text-2xl">{result.bep} <span className="text-sm">{t("سنة", "yrs")}</span></div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="card-masaar p-4">
+                <div className="text-xs text-muted-foreground">{t("نقطة التعادل", "Break-even")}</div>
+                <div className="font-display text-xl text-primary mt-1">{result.bep} {t("سنة", "yrs")}</div>
               </div>
-              <div className="bg-white/10 rounded-xl p-3">
-                <div className="text-xs text-white/60">{t(`عائد ${years} سنة`, `${years}-yr ROI`)}</div>
-                <div className="font-display text-2xl">{result.roi}%</div>
+              <div className="card-masaar p-4">
+                <div className="text-xs text-muted-foreground">{t(`عائد ${years} سنة`, `${years}-Year ROI`)}</div>
+                <div className="font-display text-xl text-secondary mt-1">{result.roi}%</div>
+              </div>
+              <div className="card-masaar p-4">
+                <div className="text-xs text-muted-foreground">{t("تصنيف الفرصة", "Opportunity")}</div>
+                <div className="font-display text-base mt-1" style={{color:"hsl(170, 47%, 33%)"}}>{"⭐".repeat(Math.min(5, Math.max(3, Math.round(result.roi / 80))))}</div>
+              </div>
+              <div className="card-masaar p-4">
+                <div className="text-xs text-muted-foreground">{t("متوسط الإشغال", "Avg Occupancy")}</div>
+                <div className="font-display text-xl text-primary mt-1">{result.occupancy}%</div>
               </div>
             </div>
-            <div className="bg-tertiary text-primary rounded-xl p-3 text-center">
-              <div className="text-xs">{t("تصنيف الفرصة", "Opportunity Rating")}</div>
-              <div className="font-display text-lg">{"⭐".repeat(Math.min(5, Math.max(3, Math.round(result.roi / 80))))} {t("ممتازة", "Excellent")}</div>
+
+            <div className="card-masaar p-4">
+              <h4 className="font-display text-sm mb-2">{t(`توقع الإيراد — ${years} سنوات`, `Revenue Projection — ${years} Years`)}</h4>
+              <ResponsiveContainer width="100%" height={150}>
+                <LineChart data={result.projection}>
+                  <XAxis dataKey="year" tick={{fontSize:10}} axisLine={false} tickLine={false} />
+                  <YAxis tick={{fontSize:10}} axisLine={false} tickLine={false} />
+                  <RTooltip formatter={(val: number) => `${val.toLocaleString()} JD`} />
+                  <Line type="monotone" dataKey="revenue" stroke="hsl(17, 46%, 47%)" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="cumulative" stroke="hsl(42, 82%, 64%)" strokeWidth={2} strokeDasharray="4 4" dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+              <div className="flex gap-4 mt-2 text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1"><span className="w-3 h-0.5" style={{background:"hsl(17, 46%, 47%)"}}/>{t("إيراد سنوي", "Annual Revenue")}</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-0.5 border-t border-dashed" style={{borderColor:"hsl(42, 82%, 64%)"}}/>{t("تراكمي", "Cumulative")}</span>
+              </div>
+            </div>
+
+            <div className="card-masaar p-4 bg-background">
+              <p className="text-xs font-bold uppercase text-secondary">✨ {t("توصية الذكاء", "AI Recommendation")}</p>
+              <p className="text-sm mt-2 leading-snug">{result.aiRec}</p>
             </div>
           </div>
         )}

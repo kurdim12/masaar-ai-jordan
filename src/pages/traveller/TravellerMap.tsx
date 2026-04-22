@@ -17,7 +17,7 @@ export default function TravellerMap() {
     <AppShell>
       <AppHeader title={t("الخريطة", "Map")} />
       <div className="h-[calc(100vh-9rem)] mx-3 mt-2 rounded-2xl overflow-hidden border border-border/30 shadow-card">
-        <MapContainer center={[31.2, 36.3]} zoom={7} style={{ height: "100%", width: "100%" }}>
+        <MapContainer center={[31.5, 36.5]} zoom={7} style={{ height: "100%", width: "100%" }}>
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; OSM &copy; CARTO'
