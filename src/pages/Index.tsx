@@ -1,16 +1,11 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Navigate } from "react-router-dom";
+import { useApp } from "@/context/AppContext";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
-  return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
-  );
-};
-
-const Index = PlaceholderIndex;
-
-export default Index;
+// Root: route based on whether the user has chosen a path before
+export default function Index() {
+  const { userType } = useApp();
+  if (!userType) return <Navigate to="/splash" replace />;
+  if (userType === "traveller") return <Navigate to="/traveller/discover" replace />;
+  if (userType === "investor") return <Navigate to="/investor/map" replace />;
+  return <Navigate to="/business/dashboard" replace />;
+}
