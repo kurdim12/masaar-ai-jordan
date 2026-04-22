@@ -3,6 +3,7 @@ import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { clearAllDemoKeys, isDemoMode } from "@/lib/demo";
 
 const roleLabel = (u: string | null) => {
   if (u === "traveller") return { ar: "سائح", en: "Traveller" };
@@ -15,9 +16,13 @@ export default function Profile() {
   const { t, userType, clearUserType } = useApp();
   const nav = useNavigate();
   const role = roleLabel(userType);
+  const demo = isDemoMode();
 
   const switchRole = () => {
-    localStorage.removeItem("masaar_role");
+    ["masaar.userType", "masaar.ip", "masaar.bp", "masaar.tp", "masaar.locale", "masaar.offers"].forEach((k) =>
+      localStorage.removeItem(k)
+    );
+    clearAllDemoKeys();
     clearUserType();
     toast.success(t("اختر دوراً جديداً", "Pick a new role"));
     nav("/path");

@@ -91,7 +91,51 @@ export default function GovernorateDetail() {
           </div>
         </section>
 
-        {/* Available offers */}
+        {/* Flash Offers — cross-user, from masaar_active_offers */}
+        {(() => {
+          const flash = getActiveDemoOffers().filter((o) => o.location === g.id);
+          if (flash.length === 0) return null;
+          return (
+            <section className="px-4 mt-6">
+              <h3 className="font-display text-lg mb-2 flex items-center gap-2">
+                <span
+                  className="w-2.5 h-2.5 rounded-full animate-pulse"
+                  style={{ background: "hsl(var(--destructive))" }}
+                />
+                ⚡ {t("عروض لحظية", "Flash Offers")}
+              </h3>
+              <div className="space-y-3">
+                {flash.map((o) => (
+                  <div key={o.id} className="card-clean">
+                    <div className="font-display text-lg">{o.businessName}</div>
+                    <div className="text-sm text-muted-foreground">{o.roomType}</div>
+                    <div className="flex items-baseline gap-2 mt-2">
+                      <span className="font-display text-2xl text-secondary">
+                        {o.offerPrice} <span className="text-xs text-muted-foreground">{t("د.أ / ليلة", "JD / night")}</span>
+                      </span>
+                      <span className="text-xs text-muted-foreground line-through">{o.originalPrice} JD</span>
+                    </div>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mt-2">
+                      <span>⏱ {o.expiresIn} {t("متبقية", "left")}</span>
+                      <span>👁 {o.views} {t("سائح شاهد هذا", "travellers viewed this")}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2 leading-snug">
+                      {t(o.descriptionAr, o.description)}
+                    </p>
+                    <button
+                      className="w-full mt-3 rounded-lg py-3 font-semibold text-white"
+                      style={{ background: "#8b4f33" }}
+                    >
+                      {t("عرض التفصيل", "View Offer")}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          );
+        })()}
+
+        {/* Available offers (existing context offers) */}
         <section className="px-4 mt-6">
           <h3 className="font-display text-lg mb-2">{t("عروض متاحة الآن", "Available Now")}</h3>
           {localOffers.length === 0 ? (
