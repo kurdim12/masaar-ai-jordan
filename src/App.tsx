@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppProvider } from "@/context/AppContext";
 import { RoleGuard } from "@/components/RoleGuard";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Splash from "./pages/Splash";
@@ -40,6 +41,7 @@ const I = ({ children }: { children: React.ReactNode }) => <RoleGuard allow="inv
 const B = ({ children }: { children: React.ReactNode }) => <RoleGuard allow="business">{children}</RoleGuard>;
 
 const App = () => (
+  <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <AppProvider>
       <TooltipProvider>
@@ -82,6 +84,7 @@ const App = () => (
       </TooltipProvider>
     </AppProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
