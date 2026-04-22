@@ -13,6 +13,7 @@ import Onboarding from "./pages/Onboarding";
 import ChoosePath from "./pages/ChoosePath";
 import Profile from "./pages/Profile";
 import About from "./pages/About";
+import Auth from "./pages/Auth";
 
 import TravellerOnboarding from "./pages/traveller/TravellerOnboarding";
 import TravellerDiscover from "./pages/traveller/TravellerDiscover";
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/path" element={<ChoosePath />} />
             <Route path="/about" element={<About />} />
+            <Route path="/auth" element={<Auth />} />
 
             <Route path="/traveller/onboarding" element={<TravellerOnboarding />} />
             <Route path="/traveller/discover" element={<T><TravellerDiscover /></T>} />
