@@ -153,6 +153,52 @@ export default function BusinessDashboard() {
           )}
         </section>
 
+        <section>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-display text-lg">{t("توقع الطلب (90 يوم)", "Demand Forecast (90 days)")}</h3>
+            <button onClick={() => nav("/business/analytics")} className="text-xs text-secondary font-semibold">
+              {t("عرض الكل →", "View all →")}
+            </button>
+          </div>
+          <div className="card-masaar p-4">
+            <p className="text-[11px] text-muted-foreground mb-2">
+              {(() => {
+                const g = governorates.find(x => x.id === businessProfile.location);
+                return t(
+                  `بناءً على أنماط السياحة في ${g ? g.nameAr : "منطقتك"}`,
+                  `Based on tourism patterns in ${g ? g.nameEn : "your area"}`
+                );
+              })()}
+            </p>
+            <ResponsiveContainer width="100%" height={140}>
+              <AreaChart data={businessForecast}>
+                <defs>
+                  <linearGradient id="dashForecast" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="week" tick={{ fontSize: 9 }} axisLine={false} tickLine={false} interval={1} />
+                <YAxis tick={{ fontSize: 9 }} axisLine={false} tickLine={false} width={24} />
+                <Tooltip />
+                <Area type="monotone" dataKey="demand" stroke="hsl(var(--secondary))" strokeWidth={2} fill="url(#dashForecast)" />
+              </AreaChart>
+            </ResponsiveContainer>
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              <div className="rounded-lg p-2" style={{ background: "hsl(var(--muted))" }}>
+                <div className="text-[10px] uppercase tracking-wide text-secondary font-bold">📈 {t("ذروة","Peak")}</div>
+                <div className="text-xs font-display mt-1">{t("15 مارس — 10 أبريل","Mar 15 — Apr 10")}</div>
+                <div className="text-[10px] text-muted-foreground">{t("إشغال 85% متوقع","85% occupancy")}</div>
+              </div>
+              <div className="rounded-lg p-2" style={{ background: "hsl(var(--muted))" }}>
+                <div className="text-[10px] uppercase tracking-wide text-tertiary font-bold">⚡ {t("فرصة","Opportunity")}</div>
+                <div className="text-xs font-display mt-1">{t("20 يناير — 5 فبراير","Jan 20 — Feb 5")}</div>
+                <div className="text-[10px] text-muted-foreground">{t("أطلق عروض سريعة","Launch flash offers")}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <div className="grid grid-cols-2 gap-2">
           <button onClick={() => nav("/business/offer")} className="btn-primary text-sm">➕ {t("عرض جديد","New Offer")}</button>
           <button onClick={() => nav("/business/emergency")} className="rounded-lg py-3 px-4 font-medium text-white text-sm" style={{ background: "hsl(var(--destructive))" }}>📢 {t("طارئ","Emergency")}</button>
