@@ -3,6 +3,7 @@ import { useApp } from "@/context/AppContext";
 import { governorates } from "@/data/jordan";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
+import { toast } from "sonner";
 
 export default function TripPlanner() {
   const { t } = useApp();
