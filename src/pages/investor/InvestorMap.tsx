@@ -16,6 +16,7 @@ const FORECAST_GOVS = ["Wadi Rum", "Petra", "Dead Sea", "Aqaba", "Jerash"];
 export default function InvestorMap() {
   const { t, locale } = useApp();
   const nav = useNavigate();
+  const [selectedGov, setSelectedGov] = useState<string>("Wadi Rum");
   const top = [...governorates].sort((a, b) => b.priorityScore - a.priorityScore);
   const topOpp = top[0];
 
