@@ -117,7 +117,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   }, []); // eslint-disable-line
 
   useEffect(() => { localStorage.setItem("masaar.locale", locale); document.documentElement.dir = locale === "ar" ? "rtl" : "ltr"; document.documentElement.lang = locale; }, [locale]);
-  useEffect(() => { if (userType) localStorage.setItem("masaar.userType", userType); }, [userType]);
+  useEffect(() => { if (userType) localStorage.setItem("masaar.userType", userType); else localStorage.removeItem("masaar.userType"); }, [userType]);
   useEffect(() => { localStorage.setItem("masaar.tp", JSON.stringify(travellerProfile)); }, [travellerProfile]);
   useEffect(() => { localStorage.setItem("masaar.ip", JSON.stringify(investorProfile)); }, [investorProfile]);
   useEffect(() => { localStorage.setItem("masaar.bp", JSON.stringify(businessProfile)); }, [businessProfile]);
