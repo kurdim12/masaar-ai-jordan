@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 import { LocaleToggle } from "@/components/LocaleToggle";
+import { loadInvestorDemo, loadBusinessDemo } from "@/lib/demo";
+import { toast } from "sonner";
 
 const cards = [
   {
@@ -33,8 +35,26 @@ const cards = [
 ];
 
 export default function ChoosePath() {
-  const { t, setUserType } = useApp();
+  const { t, setUserType, setLocale, setInvestorProfile, setBusinessProfile } = useApp();
   const nav = useNavigate();
+
+  const onInvestorDemo = () => {
+    loadInvestorDemo();
+    setLocale("ar");
+    setInvestorProfile({ focus: "Camp / Eco-lodge, Wellness center", capital: "200K - 500K JD", region: "wadi_rum" });
+    setUserType("investor");
+    toast.success("مرحباً خالد 👋 جاهز للاستكشاف");
+    nav("/investor/map");
+  };
+
+  const onBusinessDemo = () => {
+    loadBusinessDemo();
+    setLocale("en");
+    setBusinessProfile({ name: "Rose City Guesthouse", type: "Guesthouse", location: "petra", rooms: 12, minPrice: 45, maxPrice: 85 });
+    setUserType("business");
+    toast.success("Welcome back, Nour 👋");
+    nav("/business/dashboard");
+  };
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-md mx-auto px-5 pt-6 pb-10">
