@@ -188,6 +188,7 @@ export const tenders = [
   { id: "t2", titleAr: "مركز علاجي متكامل بالبحر الميت", titleEn: "Dead Sea Wellness Center", authority: { ar: "هيئة المنطقة الاقتصادية الخاصة", en: "Special Economic Zone Authority" }, location: { ar: "البحر الميت", en: "Dead Sea" }, deadline: "2025-07-15", budget: "1M – 5M JD", type: "medical" },
   { id: "t3", titleAr: "تطوير الواجهة البحرية في العقبة", titleEn: "Aqaba Waterfront Development", authority: { ar: "سلطة منطقة العقبة الاقتصادية", en: "Aqaba Special Economic Zone Authority" }, location: { ar: "العقبة", en: "Aqaba" }, deadline: "2025-08-01", budget: "2M – 10M JD", type: "entertainment" },
   { id: "t4", titleAr: "فندق تراثي في جرش", titleEn: "Heritage Hotel in Jerash", authority: { ar: "وزارة السياحة", en: "Ministry of Tourism" }, location: { ar: "جرش", en: "Jerash" }, deadline: "2025-05-30", budget: "200K – 800K JD", type: "hotel" },
+  { id: "t5", titleAr: "تطوير الينابيع الحرارية في الزرقاء", titleEn: "Zarqa Thermal Springs Development", authority: { ar: "وزارة الصحة", en: "Ministry of Health" }, location: { ar: "الزرقاء", en: "Zarqa" }, deadline: "2025-09-15", budget: "300K – 1M JD", type: "medical" },
 ];
 
 export const aiTips = [
@@ -195,4 +196,122 @@ export const aiTips = [
   { ar: "✨ وادي رم: أكتوبر–مارس أفضل لطقس مريح", en: "✨ Wadi Rum: best Oct–Mar for comfortable temperatures" },
   { ar: "✨ البحر الميت: العلاج الجلدي متاح طوال السنة", en: "✨ Dead Sea: dermatology treatments available year-round" },
   { ar: "✨ جرش هادئة الآن — فرصة رائعة للزيارة", en: "✨ Jerash is quiet now — a perfect time to visit" },
+];
+
+// Forecast data for Investor flow
+export const forecastData: Record<string, { month: string; visitors: number | null; forecast: number | null }[]> = {
+  "Wadi Rum": [
+    { month: "Jan", visitors: 18000, forecast: null },
+    { month: "Feb", visitors: 15000, forecast: null },
+    { month: "Mar", visitors: 28000, forecast: null },
+    { month: "Apr", visitors: 38000, forecast: null },
+    { month: "May", visitors: 41000, forecast: null },
+    { month: "Jun", visitors: 29000, forecast: null },
+    { month: "Jul", visitors: 22000, forecast: null },
+    { month: "Aug", visitors: 35000, forecast: null },
+    { month: "Sep", visitors: 38000, forecast: null },
+    { month: "Oct", visitors: 31000, forecast: 31000 },
+    { month: "Nov", visitors: null, forecast: 34000 },
+    { month: "Dec", visitors: null, forecast: 38000 },
+    { month: "Jan+", visitors: null, forecast: 42000 },
+  ],
+  "Petra": [
+    { month: "Jan", visitors: 42000, forecast: null },
+    { month: "Feb", visitors: 38000, forecast: null },
+    { month: "Mar", visitors: 71000, forecast: null },
+    { month: "Apr", visitors: 89000, forecast: null },
+    { month: "May", visitors: 95000, forecast: null },
+    { month: "Jun", visitors: 67000, forecast: null },
+    { month: "Jul", visitors: 55000, forecast: null },
+    { month: "Aug", visitors: 88000, forecast: null },
+    { month: "Sep", visitors: 91000, forecast: null },
+    { month: "Oct", visitors: 76000, forecast: 76000 },
+    { month: "Nov", visitors: null, forecast: 82000 },
+    { month: "Dec", visitors: null, forecast: 91000 },
+    { month: "Jan+", visitors: null, forecast: 98000 },
+  ],
+  "Dead Sea": [
+    { month: "Jan", visitors: 62000, forecast: null },
+    { month: "Feb", visitors: 58000, forecast: null },
+    { month: "Mar", visitors: 71000, forecast: null },
+    { month: "Apr", visitors: 74000, forecast: null },
+    { month: "May", visitors: 69000, forecast: null },
+    { month: "Jun", visitors: 52000, forecast: null },
+    { month: "Jul", visitors: 44000, forecast: null },
+    { month: "Aug", visitors: 55000, forecast: null },
+    { month: "Sep", visitors: 67000, forecast: null },
+    { month: "Oct", visitors: 61000, forecast: 61000 },
+    { month: "Nov", visitors: null, forecast: 65000 },
+    { month: "Dec", visitors: null, forecast: 70000 },
+    { month: "Jan+", visitors: null, forecast: 68000 },
+  ],
+  "Aqaba": [
+    { month: "Jan", visitors: 88000, forecast: null },
+    { month: "Feb", visitors: 79000, forecast: null },
+    { month: "Mar", visitors: 98000, forecast: null },
+    { month: "Apr", visitors: 112000, forecast: null },
+    { month: "May", visitors: 118000, forecast: null },
+    { month: "Jun", visitors: 104000, forecast: null },
+    { month: "Jul", visitors: 95000, forecast: null },
+    { month: "Aug", visitors: 119000, forecast: null },
+    { month: "Sep", visitors: 115000, forecast: null },
+    { month: "Oct", visitors: 103000, forecast: 103000 },
+    { month: "Nov", visitors: null, forecast: 110000 },
+    { month: "Dec", visitors: null, forecast: 118000 },
+    { month: "Jan+", visitors: null, forecast: 125000 },
+  ],
+  "Jerash": [
+    { month: "Jan", visitors: 24000, forecast: null },
+    { month: "Feb", visitors: 21000, forecast: null },
+    { month: "Mar", visitors: 44000, forecast: null },
+    { month: "Apr", visitors: 58000, forecast: null },
+    { month: "May", visitors: 62000, forecast: null },
+    { month: "Jun", visitors: 41000, forecast: null },
+    { month: "Jul", visitors: 32000, forecast: null },
+    { month: "Aug", visitors: 51000, forecast: null },
+    { month: "Sep", visitors: 54000, forecast: null },
+    { month: "Oct", visitors: 46000, forecast: 46000 },
+    { month: "Nov", visitors: null, forecast: 52000 },
+    { month: "Dec", visitors: null, forecast: 58000 },
+    { month: "Jan+", visitors: null, forecast: 65000 },
+  ],
+};
+
+export const forecastInsights: Record<string, { ar: string; en: string }> = {
+  "Wadi Rum": {
+    ar: "الطلب متوقع أن ينمو 22% بحلول الموسم القادم. الطاقة الاستيعابية للإيكو لودج تلبي 68% فقط من الطلب — إشارة استثمارية قوية.",
+    en: "Demand projected to grow 22% by next season. Eco-lodge capacity meets only 68% of forecasted demand — strong investment signal.",
+  },
+  "Petra": {
+    ar: "ذروة الموسم (مارس–مايو) متوقع تجاوز مستويات 2024 بـ 15%. نقص الأسرة سيتفاقم بدون توسعة فورية.",
+    en: "Peak season (Mar-May) demand expected to exceed 2024 levels by 15%. Bed shortage will worsen without immediate capacity expansion.",
+  },
+  "Dead Sea": {
+    ar: "السياحة العلاجية تدفع طلباً مستقراً طوال السنة. التوقعات تظهر نمواً 12% مدفوعاً بسياح الصحة الأوروبيين.",
+    en: "Medical & wellness tourism driving steady year-round demand. Forecast shows 12% growth driven by European health tourists.",
+  },
+  "Aqaba": {
+    ar: "مسار نمو مستقر بمعدل 9% سنوياً. التوقعات تشير لفجوة في الإقامة المتوسطة 80–120 د.أ/ليلة.",
+    en: "Stable growth trajectory at 9% annually. Forecast suggests mid-tier accommodation gap in the 80-120 JD/night segment.",
+  },
+  "Jerash": {
+    ar: "أسرع موقع تراثي نمواً في الأردن بـ 14% سنوياً. نقص حاد في الإقامة — 890 غرفة فقط لـ 420 ألف زائر سنوياً.",
+    en: "Fastest growing heritage site in Jordan at 14% YoY. Severe accommodation shortage — only 890 rooms for 420K annual visitors.",
+  },
+};
+
+// Forecast data for Business flow (next 12 weeks)
+export const businessForecast = [
+  { week: "W1 Jan", demand: 45 },
+  { week: "W2 Jan", demand: 42 },
+  { week: "W3 Jan", demand: 38 },
+  { week: "W4 Jan", demand: 35 },
+  { week: "W1 Feb", demand: 40 },
+  { week: "W2 Feb", demand: 48 },
+  { week: "W3 Feb", demand: 55 },
+  { week: "W4 Feb", demand: 62 },
+  { week: "W1 Mar", demand: 72 },
+  { week: "W2 Mar", demand: 85 },
+  { week: "W3 Mar", demand: 91 },
+  { week: "W4 Mar", demand: 88 },
 ];
