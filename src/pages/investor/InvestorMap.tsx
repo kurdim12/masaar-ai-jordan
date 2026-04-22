@@ -1,13 +1,17 @@
+import { useState } from "react";
 import { MapContainer, TileLayer, CircleMarker, Tooltip } from "react-leaflet";
 import "@/lib/leafletSetup";
 import { useApp } from "@/context/AppContext";
-import { governorates } from "@/data/jordan";
+import { governorates, forecastData, forecastInsights } from "@/data/jordan";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
+import { Area, AreaChart, ResponsiveContainer, Tooltip as RTooltip, XAxis, YAxis } from "recharts";
 
 const oppColor = (o: "high" | "medium" | "low") =>
   o === "high" ? "hsl(17, 46%, 47%)" : o === "medium" ? "hsl(42, 82%, 64%)" : "hsl(170, 47%, 33%)";
+
+const FORECAST_GOVS = ["Wadi Rum", "Petra", "Dead Sea", "Aqaba", "Jerash"];
 
 export default function InvestorMap() {
   const { t, locale } = useApp();
