@@ -17,10 +17,26 @@ const govIdByName: Record<string, string> = {
   "Karak": "karak",
 };
 
+const govNameById: Record<string, string> = {
+  wadi_rum: "Wadi Rum",
+  petra: "Petra",
+  dead_sea: "Dead Sea",
+  aqaba: "Aqaba",
+  jerash: "Jerash",
+  karak: "Karak",
+};
+
 export default function InvestorForecast() {
   const { t } = useApp();
   const nav = useNavigate();
-  const [selected, setSelected] = useState<string>("Wadi Rum");
+  const initial = (() => {
+    try {
+      const p = JSON.parse(localStorage.getItem("masaar_investor_profile") || "null");
+      if (p?.focusRegion && govNameById[p.focusRegion]) return govNameById[p.focusRegion];
+    } catch { /* ignore */ }
+    return "Wadi Rum";
+  })();
+  const [selected, setSelected] = useState<string>(initial);
   const data = forecastData[selected] || forecastData["Wadi Rum"];
   const insight = forecastInsights[selected] || forecastInsights["Wadi Rum"];
   const govId = govIdByName[selected];
