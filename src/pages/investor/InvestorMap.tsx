@@ -5,6 +5,7 @@ import { governorates } from "@/data/jordan";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
+import { MapMount } from "@/components/MapMount";
 
 const oppColor = (o: "high" | "medium" | "low") =>
   o === "high" ? "hsl(17, 46%, 47%)" : o === "medium" ? "hsl(42, 82%, 64%)" : "hsl(170, 47%, 33%)";

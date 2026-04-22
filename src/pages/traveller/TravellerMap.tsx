@@ -5,6 +5,7 @@ import { governorates } from "@/data/jordan";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
+import { MapMount } from "@/components/MapMount";
 
 const crowdColor = (c: "high" | "medium" | "low") =>
   c === "high" ? "hsl(12, 55%, 56%)" : c === "medium" ? "hsl(45, 65%, 55%)" : "hsl(170, 47%, 33%)";
