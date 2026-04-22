@@ -8,8 +8,10 @@ import { businessForecast, governorates } from "@/data/jordan";
 const COLORS = ["hsl(213, 49%, 12%)","hsl(17, 46%, 37%)","hsl(42, 82%, 64%)","hsl(170, 47%, 33%)"];
 
 export default function BusinessAnalytics() {
-  const { t } = useApp();
-  const [period, setPeriod] = useState<"week"|"month"|"year">("month");
+  const { t, businessProfile } = useApp();
+  const [period, setPeriod] = useState<"week"|"month"|"year"|"forecast">("month");
+  const businessLocGov = governorates.find(g => g.id === businessProfile.location);
+  const businessLocation = businessLocGov ? t(businessLocGov.nameAr, businessLocGov.nameEn) : t("منطقتك", "your area");
   const occupancy = Array.from({ length: 30 }, (_, i) => ({ d: i+1, v: 55 + Math.round(Math.sin(i/3)*15 + Math.random()*8) }));
   const revenue = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m,i) => ({ m, v: 4000 + Math.round(Math.sin(i/2)*1500 + i*120) }));
   const nationalities = [
