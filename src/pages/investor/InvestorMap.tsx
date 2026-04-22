@@ -5,6 +5,7 @@ import { governorates } from "@/data/jordan";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
+import { MapMount } from "@/components/MapMount";
 
 const oppColor = (o: "high" | "medium" | "low") =>
   o === "high" ? "hsl(17, 46%, 47%)" : o === "medium" ? "hsl(42, 82%, 64%)" : "hsl(170, 47%, 33%)";
@@ -24,6 +25,7 @@ export default function InvestorMap() {
       </div>
 
       <div className="mx-4 mt-3 rounded-2xl overflow-hidden shadow-card border border-border/30 h-[260px]">
+        <MapMount height={260}>
         <MapContainer center={[31.5, 36.5]} zoom={7} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
           <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution='&copy; OSM &copy; CARTO' />
           {governorates.map(g => (
@@ -35,6 +37,7 @@ export default function InvestorMap() {
             </CircleMarker>
           ))}
         </MapContainer>
+        </MapMount>
       </div>
 
       {/* Stability index */}

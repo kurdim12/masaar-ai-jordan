@@ -12,7 +12,7 @@ const roleLabel = (u: string | null) => {
 };
 
 export default function Profile() {
-  const { t, userType, clearUserType, geminiKey, setGeminiKey } = useApp();
+  const { t, userType, clearUserType } = useApp();
   const nav = useNavigate();
   const role = roleLabel(userType);
 
@@ -38,6 +38,22 @@ export default function Profile() {
               style={{ background: "hsl(var(--surface-cream))", color: "hsl(var(--secondary))" }}>
               {t(role.ar, role.en)}
             </span>
+          </div>
+        </div>
+
+        {/* AI status */}
+        <div className="card-clean">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-tertiary">auto_awesome</span>
+            <div className="flex-1">
+              <div className="text-[14px] font-medium text-primary">
+                {t("الذكاء الاصطناعي مُفعّل", "AI is active")}
+              </div>
+              <div className="text-[12px] text-muted-foreground mt-0.5">
+                {t("مدعوم بـ Lovable AI — لا حاجة لمفتاح", "Powered by Lovable AI — no key needed")}
+              </div>
+            </div>
+            <span className="w-2 h-2 rounded-full bg-success" />
           </div>
         </div>
 
@@ -67,26 +83,6 @@ export default function Profile() {
             </div>
             <span className="material-symbols-outlined text-muted-foreground">chevron_right</span>
           </button>
-        </section>
-
-        {/* Gemini key */}
-        <section className="space-y-3">
-          <h2 className="font-display text-[16px] text-primary font-semibold">{t("مفتاح Gemini AI", "Gemini AI Key")}</h2>
-          <div className="card-clean space-y-2">
-            <p className="text-[13px] text-muted-foreground leading-snug">
-              {t(
-                "ألصق مفتاحك من Google AI Studio لتفعيل ردود الذكاء الاصطناعي الكاملة.",
-                "Paste your key from Google AI Studio to enable full AI responses."
-              )}
-            </p>
-            <input
-              value={geminiKey}
-              onChange={e => setGeminiKey(e.target.value)}
-              type="password"
-              placeholder="AIza…"
-              className="w-full bg-muted rounded-lg px-3 py-2 text-[13px] outline-none"
-            />
-          </div>
         </section>
       </div>
     </AppShell>

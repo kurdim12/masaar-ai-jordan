@@ -7,20 +7,42 @@ import { businessForecast, governorates } from "@/data/jordan";
 
 const COLORS = ["hsl(213, 49%, 12%)","hsl(17, 46%, 37%)","hsl(42, 82%, 64%)","hsl(170, 47%, 33%)"];
 
+// Deterministic seeded RNG so analytics numbers are stable per business.
+const seedFn = (n: number) => ((n * 9301 + 49297) % 233280) / 233280;
+const hashStr = (s: string) => {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h) || 1;
+};
+
 export default function BusinessAnalytics() {
   const { t, businessProfile } = useApp();
   const [period, setPeriod] = useState<"week"|"month"|"year"|"forecast">("month");
   const businessLocGov = governorates.find(g => g.id === businessProfile.location);
   const businessLocation = businessLocGov ? t(businessLocGov.nameAr, businessLocGov.nameEn) : t("منطقتك", "your area");
-  const occupancy = Array.from({ length: 30 }, (_, i) => ({ d: i+1, v: 55 + Math.round(Math.sin(i/3)*15 + Math.random()*8) }));
-  const revenue = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m,i) => ({ m, v: 4000 + Math.round(Math.sin(i/2)*1500 + i*120) }));
+
+  // Stable seed per business — changes only when the profile identity changes.
+  const baseSeed = hashStr(`${businessProfile.name || "demo"}|${businessProfile.location || "loc"}|${businessProfile.type || "type"}`);
+  const rand = (offset: number) => seedFn(baseSeed + offset);
+
+  const occupancy = Array.from({ length: 30 }, (_, i) => ({
+    d: i + 1,
+    v: 55 + Math.round(Math.sin(i / 3) * 15 + rand(i + 1) * 16 - 4),
+  }));
+  const revenue = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, i) => ({
+    m,
+    v: 4000 + Math.round(Math.sin(i / 2) * 1500 + i * 120 + rand(i + 100) * 600),
+  }));
   const nationalities = [
-    { name: t("أردنيون","Jordanians"), value: 35 },
-    { name: t("خليجيون","Gulf"), value: 28 },
-    { name: t("أوروبيون","Europeans"), value: 22 },
-    { name: t("أمريكيون","Americans"), value: 15 },
+    { name: t("أردنيون","Jordanians"), value: 30 + Math.round(rand(201) * 12) },
+    { name: t("خليجيون","Gulf"), value: 22 + Math.round(rand(202) * 10) },
+    { name: t("أوروبيون","Europeans"), value: 18 + Math.round(rand(203) * 10) },
+    { name: t("أمريكيون","Americans"), value: 10 + Math.round(rand(204) * 10) },
   ];
-  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => ({ d, v: Math.round(40 + Math.random()*50) }));
+  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((d, i) => ({
+    d,
+    v: 40 + Math.round(rand(300 + i) * 50),
+  }));
   const tips = [
     t("ارفع أسعار نهاية الأسبوع 10–15%", "Raise weekend prices 10–15%"),
     t("قدم حزماً عائلية للسياح الخليجيين في الصيف", "Offer family bundles to Gulf travellers in summer"),
