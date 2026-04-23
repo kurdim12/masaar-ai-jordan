@@ -411,24 +411,113 @@
   }
 
   /* === GLASS SURFACE (header / nav) === */
-  .glass {
+  .glass,
+  .glass-header {
     background: hsl(var(--void) / 0.88);
     backdrop-filter: blur(24px) saturate(160%);
     -webkit-backdrop-filter: blur(24px) saturate(160%);
     border-bottom: 0.5px solid hsl(var(--sand) / 0.12);
   }
-  .light-mode .glass {
-    background: hsl(var(--cream) / 0.90);
+  .glass-header-cream,
+  .light-mode .glass,
+  .light-mode .glass-header {
+    background: hsl(var(--cream) / 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 0.5px solid hsl(var(--sand) / 0.25);
   }
   nav.glass,
-  .nav-glass {
+  .nav-glass,
+  .bottom-nav {
     background: hsl(212 60% 4% / 0.97);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-top: 0.5px solid hsl(var(--sand) / 0.10);
     border-bottom: none;
   }
+
+  /* === BOTTOM NAV ITEMS === */
+  .nav-item {
+    position: relative;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px;
+    color: hsl(var(--sand) / 0.32);
+    transition: color 0.18s;
+  }
+  .nav-item .nav-label {
+    font: 500 9.5px 'DM Sans', sans-serif;
+    color: hsl(var(--sand) / 0.32);
+    transition: color 0.18s;
+  }
+  .nav-item.active,
+  .nav-item[data-active="true"] { color: hsl(var(--gold)); }
+  .nav-item.active .nav-label,
+  .nav-item[data-active="true"] .nav-label { color: hsl(var(--gold)); }
+  .nav-item.active::before,
+  .nav-item[data-active="true"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 28px; height: 3px;
+    border-radius: 0 0 4px 4px;
+    background: hsl(var(--gold));
+  }
+
+  /* === RANK ROWS === */
+  .rank-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 14px;
+    background: hsl(var(--n2));
+    border: 0.5px solid hsl(var(--sand) / 0.10);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: border-color 0.18s;
+  }
+  .rank-row:hover { border-color: hsl(var(--gold) / 0.25); }
+  .rank-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: hsl(var(--n4));
+    width: 28px; text-align: center; flex-shrink: 0;
+  }
+  .rank-name { font: 500 14px 'DM Sans', sans-serif; color: hsl(var(--t1)); }
+  .rank-type { font: 400 11px 'DM Sans', sans-serif; color: hsl(var(--t3)); margin-top: 1px; }
+  .rank-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px; color: hsl(var(--gold));
+    flex-shrink: 0;
+  }
+
+  /* === STREAM CURSOR === */
+  .stream-cursor {
+    display: inline-block;
+    width: 2px; height: 14px;
+    background: hsl(var(--gold));
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: stream-blink 1s step-end infinite;
+  }
+  @keyframes stream-blink { 50% { opacity: 0; } }
+
+  /* === MAPBOX OVERRIDES === */
+  .mapboxgl-ctrl-logo,
+  .mapboxgl-ctrl-attrib { display: none !important; }
+  .mapboxgl-map { border-radius: inherit; font-family: 'DM Sans', sans-serif; }
+
+  /* === FADE UP ANIM === */
+  @keyframes masaar-fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-up {
+    animation: masaar-fade-up 0.48s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  .delay-1 { animation-delay: 0ms; }
+  .delay-2 { animation-delay: 80ms; }
+  .delay-3 { animation-delay: 160ms; }
+  .delay-4 { animation-delay: 240ms; }
 
   /* === DESTINATION CARD HELPERS === */
   .destination-card-image {

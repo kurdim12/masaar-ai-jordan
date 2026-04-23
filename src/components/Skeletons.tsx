@@ -34,3 +34,21 @@ export const CardSkeleton = () => (
     <Skeleton className="h-3 w-5/6" />
   </div>
 );
+
+export const SkeletonCard = ({ height = 120 }: { height?: number }) => (
+  <div className="skeleton" style={{ height, borderRadius: 18 }} />
+);
+
+export const SkeletonText = ({ width = "60%" }: { width?: string }) => (
+  <div className="skeleton" style={{ width, height: 12, borderRadius: 6 }} />
+);
+
+export const SkeletonDestCard = () => (
+  <div className="card-base !p-0 overflow-hidden">
+    <div className="skeleton" style={{ height: 210, borderRadius: 0 }} />
+    <div className="p-4 space-y-2">
+      <SkeletonText width="55%" />
+      <SkeletonText width="85%" />
+    </div>
+  </div>
+);
