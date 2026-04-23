@@ -36,11 +36,17 @@ export default function BusinessDashboard() {
     <AppShell>
       <AppHeader title={businessProfile.name || t("لوحتي", "Dashboard")} />
       <div className="px-4 pt-4 space-y-4">
-        <div className="bg-primary text-primary-foreground rounded-2xl p-4">
-          <div className="text-xs text-tertiary tracking-widest uppercase">{t("اليوم", "Today")}</div>
-          <div className="grid grid-cols-2 gap-3 mt-2">
-            <div><div className="text-xs text-white/60">{t("غرف فاضية","Empty rooms")}</div><div className="font-display text-3xl">8</div></div>
-            <div><div className="text-xs text-white/60">{t("الإشغال","Occupancy")}</div><div className="font-display text-3xl">60%</div></div>
+        <div className="card-elevated">
+          <div className="kpi-label">{t("اليوم", "Today")}</div>
+          <div className="grid grid-cols-2 gap-3 mt-3 items-end">
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">{t("غرف فاضية","Empty rooms")}</div>
+              <div className="kpi-large mt-1">8</div>
+            </div>
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-mono">{t("الإشغال","Occupancy")}</div>
+              <div className="kpi-giant mt-1" style={{ fontSize: 56 }}>60<span style={{ fontSize: 24 }}>%</span></div>
+            </div>
           </div>
         </div>
 
@@ -170,18 +176,26 @@ export default function BusinessDashboard() {
                 );
               })()}
             </p>
-            <ResponsiveContainer width="100%" height={140}>
-              <AreaChart data={businessForecast}>
+            <ResponsiveContainer width="100%" height={150}>
+              <AreaChart data={businessForecast} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="dashForecast" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0} />
+                    <stop offset="5%" stopColor="hsl(var(--gold))" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="hsl(var(--gold))" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="week" tick={{ fontSize: 9 }} axisLine={false} tickLine={false} interval={1} />
-                <YAxis tick={{ fontSize: 9 }} axisLine={false} tickLine={false} width={24} />
-                <Tooltip />
-                <Area type="monotone" dataKey="demand" stroke="hsl(var(--secondary))" strokeWidth={2} fill="url(#dashForecast)" />
+                <XAxis dataKey="week" tick={{ fontSize: 9, fill: "hsl(var(--t3))", fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} interval={1} />
+                <YAxis tick={{ fontSize: 9, fill: "hsl(var(--t3))", fontFamily: "JetBrains Mono" }} axisLine={false} tickLine={false} width={24} />
+                <Tooltip
+                  contentStyle={{
+                    background: "hsl(var(--n3))",
+                    border: "0.5px solid hsl(var(--sand) / 0.2)",
+                    borderRadius: 10,
+                    fontFamily: "DM Sans",
+                    fontSize: 12,
+                  }}
+                />
+                <Area type="monotone" dataKey="demand" stroke="hsl(var(--gold))" strokeWidth={2} fill="url(#dashForecast)" />
               </AreaChart>
             </ResponsiveContainer>
             <div className="grid grid-cols-2 gap-2 mt-3">
