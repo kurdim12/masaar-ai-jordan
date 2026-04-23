@@ -83,27 +83,48 @@ export default function InvestorMap() {
         </div>
       )}
 
-      <div className="mx-4 mt-3 rounded-2xl overflow-hidden shadow-card border border-border/30 h-[260px]">
-        <MapMount height={260}>
+      <div className="mx-4 mt-3 rounded-2xl overflow-hidden border border-border/20 h-[240px]">
+        <MapMount height={240}>
         <MapContainer center={[31.5, 36.5]} zoom={7} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
-          <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" attribution='&copy; OSM &copy; CARTO' />
+          <TileLayer
+            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            attribution='&copy; OSM &copy; CARTO'
+          />
           {governorates.map(g => (
             <CircleMarker key={g.id} center={[g.lat, g.lng]}
-              radius={Math.max(14, g.priorityScore * 4)}
-              pathOptions={{ color: oppColor(g.opportunity), fillColor: oppColor(g.opportunity), fillOpacity: 0.65, weight: 2 }}
+              radius={Math.max(14, g.priorityScore * 4.4)}
+              pathOptions={{
+                color: "rgba(255,255,255,0.18)",
+                fillColor: oppColor(g.opportunity),
+                fillOpacity: 0.85,
+                weight: 2,
+              }}
               eventHandlers={{ click: () => nav(`/investor/opportunity/${g.id}`) }}>
-              <Tooltip>{locale === "ar" ? g.nameAr : g.nameEn}</Tooltip>
+              <Tooltip permanent direction="center" className="score-tooltip" opacity={1}>
+                <span style={{ color: g.opportunity === "medium" ? "hsl(var(--n1))" : "white" }}>
+                  {g.priorityScore}
+                </span>
+              </Tooltip>
+              <Tooltip direction="top" offset={[0, -8]} opacity={1}>
+                {locale === "ar" ? g.nameAr : g.nameEn}
+              </Tooltip>
             </CircleMarker>
           ))}
         </MapContainer>
         </MapMount>
       </div>
 
-      {/* Stability index */}
-      <div className="mx-4 mt-4 bg-primary text-primary-foreground rounded-2xl p-5">
-        <div className="text-xs text-tertiary tracking-widest uppercase">{t("مؤشر الاستقرار السياحي", "Tourism Stability Index")}</div>
-        <div className="font-display text-5xl mt-1">8.4 <span className="text-xl text-white/60">/ 10</span></div>
-        <div className="mt-2 text-xs text-white/70">{t("الأردن — مستقر مع نمو إيجابي", "Jordan — stable with positive growth")}</div>
+      {/* Stability index — Bloomberg KPI */}
+      <div className="mx-4 mt-4 card-elevated">
+        <div className="section-label">{t("مؤشر الاستقرار السياحي", "Tourism Stability Index")}</div>
+        <div className="mt-2 flex items-end gap-3">
+          <span className="kpi-giant">8.4</span>
+          <span className="font-mono text-base text-muted-foreground pb-2">/ 10</span>
+        </div>
+        <div className="mt-2 flex items-center gap-3">
+          <span className="delta-up">▲ +0.6 YoY</span>
+          <span className="text-xs text-muted-foreground">{t("مستقر مع نمو إيجابي", "Stable with positive growth")}</span>
+        </div>
       </div>
 
       {/* Top opportunity */}

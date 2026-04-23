@@ -21,7 +21,7 @@ export default function TravellerMap() {
         <MapMount>
         <MapContainer center={[31.5, 36.5]} zoom={7} style={{ height: "100%", width: "100%" }}>
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             attribution='&copy; OSM &copy; CARTO'
           />
           {governorates.map(g => (
