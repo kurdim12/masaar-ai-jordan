@@ -42,7 +42,7 @@ export default function TravellerDiscover() {
       <div className="mx-4 mt-3 rounded-2xl overflow-hidden shadow-card border border-border/30 h-[300px] relative">
         <MapContainer center={[31.5, 36.5]} zoom={7} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             attribution='&copy; OSM &copy; CARTO'
           />
           {filtered.map(g => (
