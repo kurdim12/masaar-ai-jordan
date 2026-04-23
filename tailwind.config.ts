@@ -8,9 +8,10 @@ export default {
     container: { center: true, padding: "1rem", screens: { "2xl": "1400px" } },
     extend: {
       fontFamily: {
-        display: ['"Noto Serif"', "Georgia", "serif"],
-        body: ['Manrope', "system-ui", "sans-serif"],
-        arabic: ['Cairo', "system-ui", "sans-serif"],
+        display: ['"DM Serif Display"', "Georgia", "serif"],
+        body: ['"DM Sans"', "system-ui", "sans-serif"],
+        arabic: ['"IBM Plex Sans Arabic"', '"Cairo"', "system-ui", "sans-serif"],
+        mono: ['"JetBrains Mono"', "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -90,6 +91,7 @@ export default {
         card: "var(--shadow-card)",
         elevated: "var(--shadow-elevated)",
         gold: "var(--shadow-gold)",
+        rose: "var(--shadow-rose)",
       },
       borderRadius: {
         lg: "var(--radius)",

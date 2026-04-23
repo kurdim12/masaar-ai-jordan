@@ -27,7 +27,7 @@ export default function TravellerDiscover() {
   );
 
   return (
-    <AppShell>
+    <AppShell lightMode>
       <AppHeader />
 
       <div className="px-4 pt-3">

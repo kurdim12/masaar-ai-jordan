@@ -184,11 +184,11 @@ export const interestChips = [
 ];
 
 export const tenders = [
-  { id: "t1", titleAr: "مشروع منتجع سياحي في وادي رم", titleEn: "Wadi Rum Eco-Resort Development", authority: { ar: "وزارة السياحة", en: "Ministry of Tourism" }, location: { ar: "وادي رم", en: "Wadi Rum" }, deadline: "2025-06-30", budget: "500K – 2M JD", type: "hotel" },
-  { id: "t2", titleAr: "مركز علاجي متكامل بالبحر الميت", titleEn: "Dead Sea Wellness Center", authority: { ar: "هيئة المنطقة الاقتصادية الخاصة", en: "Special Economic Zone Authority" }, location: { ar: "البحر الميت", en: "Dead Sea" }, deadline: "2025-07-15", budget: "1M – 5M JD", type: "medical" },
-  { id: "t3", titleAr: "تطوير الواجهة البحرية في العقبة", titleEn: "Aqaba Waterfront Development", authority: { ar: "سلطة منطقة العقبة الاقتصادية", en: "Aqaba Special Economic Zone Authority" }, location: { ar: "العقبة", en: "Aqaba" }, deadline: "2025-08-01", budget: "2M – 10M JD", type: "entertainment" },
-  { id: "t4", titleAr: "فندق تراثي في جرش", titleEn: "Heritage Hotel in Jerash", authority: { ar: "وزارة السياحة", en: "Ministry of Tourism" }, location: { ar: "جرش", en: "Jerash" }, deadline: "2025-05-30", budget: "200K – 800K JD", type: "hotel" },
-  { id: "t5", titleAr: "تطوير الينابيع الحرارية في الزرقاء", titleEn: "Zarqa Thermal Springs Development", authority: { ar: "وزارة الصحة", en: "Ministry of Health" }, location: { ar: "الزرقاء", en: "Zarqa" }, deadline: "2025-09-15", budget: "300K – 1M JD", type: "medical" },
+  { id: "t1", titleAr: "مشروع منتجع سياحي في وادي رم", titleEn: "Wadi Rum Eco-Resort Development", authority: { ar: "وزارة السياحة", en: "Ministry of Tourism" }, location: { ar: "وادي رم", en: "Wadi Rum" }, deadline: "2026-09-30", budget: "500K – 2M JD", type: "hotel" },
+  { id: "t2", titleAr: "مركز علاجي متكامل بالبحر الميت", titleEn: "Dead Sea Wellness Center", authority: { ar: "هيئة المنطقة الاقتصادية الخاصة", en: "Special Economic Zone Authority" }, location: { ar: "البحر الميت", en: "Dead Sea" }, deadline: "2026-10-15", budget: "1M – 5M JD", type: "medical" },
+  { id: "t3", titleAr: "تطوير الواجهة البحرية في العقبة", titleEn: "Aqaba Waterfront Development", authority: { ar: "سلطة منطقة العقبة الاقتصادية", en: "Aqaba Special Economic Zone Authority" }, location: { ar: "العقبة", en: "Aqaba" }, deadline: "2026-11-01", budget: "2M – 10M JD", type: "entertainment" },
+  { id: "t4", titleAr: "فندق تراثي في جرش", titleEn: "Heritage Hotel in Jerash", authority: { ar: "وزارة السياحة", en: "Ministry of Tourism" }, location: { ar: "جرش", en: "Jerash" }, deadline: "2026-08-30", budget: "200K – 800K JD", type: "hotel" },
+  { id: "t5", titleAr: "تطوير الينابيع الحرارية في الزرقاء", titleEn: "Zarqa Thermal Springs Development", authority: { ar: "وزارة الصحة", en: "Ministry of Health" }, location: { ar: "الزرقاء", en: "Zarqa" }, deadline: "2026-12-15", budget: "300K – 1M JD", type: "medical" },
 ];
 
 export const aiTips = [
