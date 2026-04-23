@@ -36,7 +36,6 @@ export const ChatScreen = ({
     setInput("");
     setLoading(true);
 
-    // Build AI history from prior turns (skip the welcome assistant message context)
     const history: AIMsg[] = next.map(m => ({ role: m.role, content: m.content }));
 
     let assistantSoFar = "";
@@ -72,26 +71,41 @@ export const ChatScreen = ({
     });
   };
 
+  const lastIdx = messages.length - 1;
+
   return (
     <>
       <AppHeader title={t(title.ar, title.en)} showBack />
-      <div className="px-4 pt-4 pb-32 space-y-3">
-        {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div
-              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap leading-relaxed ${
-                m.role === "user"
-                  ? "bg-primary text-primary-foreground rounded-br-sm"
-                  : "card-clean !p-3 rounded-bl-sm"
-              }`}
-            >
-              {m.content || (loading && i === messages.length - 1 ? <StreamingDots /> : null)}
+
+      {/* AI status pill row */}
+      <div className="px-4 pt-2 pb-1 flex items-center gap-2">
+        <span className="w-1.5 h-1.5 rounded-full" style={{ background: "hsl(var(--jade))" }} />
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 9, color: "hsl(var(--jade))", letterSpacing: "0.08em" }}>
+          ONLINE · GEMINI 2.5 FLASH
+        </span>
+      </div>
+
+      <div className="px-4 pt-2 pb-32 space-y-3">
+        {messages.map((m, i) => {
+          const isStreaming = loading && i === lastIdx && m.role === "assistant";
+          return (
+            <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div
+                className={`px-4 py-2.5 text-sm whitespace-pre-wrap leading-relaxed ${
+                  m.role === "user" ? "bubble-user" : "bubble-ai"
+                }`}
+                style={{ maxWidth: "85%" }}
+              >
+                {m.content}
+                {isStreaming && <span className="stream-cursor" />}
+                {!m.content && loading && i === lastIdx && <StreamingDots />}
+              </div>
             </div>
-          </div>
-        ))}
-        {loading && messages[messages.length - 1]?.role === "user" && (
+          );
+        })}
+        {loading && messages[lastIdx]?.role === "user" && (
           <div className="flex justify-start">
-            <div className="card-clean !p-3 rounded-2xl rounded-bl-sm">
+            <div className="bubble-ai px-4 py-2.5">
               <StreamingDots />
             </div>
           </div>
@@ -101,7 +115,7 @@ export const ChatScreen = ({
         {messages.length <= 1 && !loading && (
           <div className="flex flex-wrap gap-2 pt-2">
             {suggestions.map((s, i) => (
-              <button key={i} onClick={() => send(t(s.ar, s.en))} className="chip text-xs">
+              <button key={i} onClick={() => send(t(s.ar, s.en))} className="chat-tag">
                 {t(s.ar, s.en)}
               </button>
             ))}
@@ -110,18 +124,27 @@ export const ChatScreen = ({
       </div>
 
       <div className="fixed bottom-16 inset-x-0 z-30 px-3 pb-2">
-        <div className="max-w-md mx-auto glass border border-border/40 rounded-full flex items-center px-2 py-1.5 shadow-card">
+        <div
+          className="max-w-md mx-auto rounded-full flex items-center px-2 py-1.5 shadow-card"
+          style={{
+            background: "hsl(212 60% 4% / 0.97)",
+            border: "0.5px solid hsl(var(--sand) / 0.18)",
+            backdropFilter: "blur(20px)",
+          }}
+        >
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && send(input)}
             placeholder={t("اكتب رسالتك…", "Type your message…")}
             className="flex-1 bg-transparent outline-none px-3 py-2 text-sm"
+            style={{ color: "hsl(var(--t1))" }}
           />
           <button
             onClick={() => send(input)}
             disabled={loading || !input.trim()}
-            className="w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-40"
+            className="w-10 h-10 rounded-full flex items-center justify-center disabled:opacity-40"
+            style={{ background: "hsl(var(--rose))", color: "white" }}
             aria-label="send"
           >
             <span className="material-symbols-outlined text-[20px]">{locale === "ar" ? "arrow_back" : "arrow_forward"}</span>

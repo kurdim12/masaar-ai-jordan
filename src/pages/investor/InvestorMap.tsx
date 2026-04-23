@@ -1,20 +1,22 @@
-import { MapContainer, TileLayer, CircleMarker, Tooltip } from "react-leaflet";
-import "@/lib/leafletSetup";
 import { useApp } from "@/context/AppContext";
 import { governorates } from "@/data/jordan";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
-import { MapMount } from "@/components/MapMount";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getInvestorWatchlist, setInvestorWatchlist } from "@/lib/demo";
 import { toast } from "sonner";
-
-const oppColor = (o: "high" | "medium" | "low") =>
-  o === "high" ? "hsl(17, 46%, 47%)" : o === "medium" ? "hsl(42, 82%, 64%)" : "hsl(170, 47%, 33%)";
+import mapboxgl from "mapbox-gl";
+import {
+  MAPBOX_TOKEN,
+  DARK_STYLE,
+  JORDAN_CENTER,
+  JORDAN_ZOOM,
+  createInvestorMarker,
+} from "@/lib/mapbox";
 
 export default function InvestorMap() {
-  const { t, locale } = useApp();
+  const { t } = useApp();
   const nav = useNavigate();
   const top = [...governorates].sort((a, b) => b.priorityScore - a.priorityScore);
   const topOpp = top[0];
@@ -52,22 +54,54 @@ export default function InvestorMap() {
     .map((w) => ({ entry: w, gov: governorates.find((g) => g.id === w.govId) }))
     .filter((x): x is { entry: typeof watchlist[number]; gov: NonNullable<typeof x.gov> } => !!x.gov);
 
+  // === Mapbox GL ===
+  const mapEl = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+
+  useEffect(() => {
+    if (!mapEl.current || mapRef.current || !MAPBOX_TOKEN) return;
+    mapboxgl.accessToken = MAPBOX_TOKEN;
+
+    const map = new mapboxgl.Map({
+      container: mapEl.current,
+      style: DARK_STYLE,
+      center: JORDAN_CENTER,
+      zoom: JORDAN_ZOOM,
+      attributionControl: false,
+    });
+    mapRef.current = map;
+
+    map.on("load", () => {
+      governorates.forEach((g) => {
+        const el = createInvestorMarker(g.priorityScore, g.opportunity);
+        new mapboxgl.Marker({ element: el, anchor: "center" })
+          .setLngLat([g.lng, g.lat])
+          .addTo(map);
+        el.addEventListener("click", () => {
+          map.flyTo({ center: [g.lng, g.lat], zoom: 9.2, duration: 1100, essential: true });
+          setTimeout(() => nav(`/investor/opportunity/${g.id}`), 600);
+        });
+      });
+    });
+
+    return () => { map.remove(); mapRef.current = null; };
+  }, [nav]);
+
   return (
     <AppShell>
       <AppHeader />
-      <div className="px-4 pt-3">
+      <div className="px-4 pt-3 animate-fade-up delay-1">
         <h1 className="font-display text-2xl">{t("فرص استثمارية", "Investment Opportunities")}</h1>
         <p className="text-muted-foreground text-sm">{t("بيانات السوق السياحي الأردني", "Jordan tourism market data")}</p>
       </div>
 
-      {/* Personalized banner for investor demo */}
       {investorProfile && !bannerDismissed && (
-        <div className="mx-4 mt-3 relative" style={{ background: "#0f1c2c", color: "white", borderRadius: 12, padding: 16 }}>
+        <div className="mx-4 mt-3 relative card-elevated">
           <button
             onClick={dismissBanner}
             aria-label="dismiss"
             className="absolute top-2 end-2 w-7 h-7 rounded-full flex items-center justify-center"
-            style={{ background: "rgba(255,255,255,0.1)", color: "white" }}
+            style={{ background: "hsl(var(--sand) / 0.10)", color: "hsl(var(--t1))" }}
           >×</button>
           <div className="text-sm leading-relaxed pe-8">
             {t(
@@ -83,39 +117,24 @@ export default function InvestorMap() {
         </div>
       )}
 
-      <div className="mx-4 mt-3 rounded-2xl overflow-hidden border border-border/20 h-[240px]">
-        <MapMount height={240}>
-        <MapContainer center={[31.5, 36.5]} zoom={7} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
-          <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution='&copy; OSM &copy; CARTO'
-          />
-          {governorates.map(g => (
-            <CircleMarker key={g.id} center={[g.lat, g.lng]}
-              radius={Math.max(14, g.priorityScore * 4.4)}
-              pathOptions={{
-                color: "rgba(255,255,255,0.18)",
-                fillColor: oppColor(g.opportunity),
-                fillOpacity: 0.85,
-                weight: 2,
-              }}
-              eventHandlers={{ click: () => nav(`/investor/opportunity/${g.id}`) }}>
-              <Tooltip permanent direction="center" className="score-tooltip" opacity={1}>
-                <span style={{ color: g.opportunity === "medium" ? "hsl(var(--n1))" : "white" }}>
-                  {g.priorityScore}
-                </span>
-              </Tooltip>
-              <Tooltip direction="top" offset={[0, -8]} opacity={1}>
-                {locale === "ar" ? g.nameAr : g.nameEn}
-              </Tooltip>
-            </CircleMarker>
-          ))}
-        </MapContainer>
-        </MapMount>
+      {/* Mapbox map */}
+      <div className="mx-4 mt-3 rounded-2xl overflow-hidden border border-border/20 animate-fade-up delay-2"
+           style={{ height: 240, background: "hsl(var(--n2))" }}>
+        {MAPBOX_TOKEN ? (
+          <div ref={mapEl} style={{ width: "100%", height: "100%" }} />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center text-center px-6">
+            <span className="material-symbols-outlined" style={{ fontSize: 36, color: "hsl(var(--gold))" }}>map</span>
+            <p className="mt-2 text-sm font-medium">{t("الخريطة تتطلب رمز Mapbox", "Map requires Mapbox token")}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {t("أضف VITE_MAPBOX_TOKEN في .env", "Add VITE_MAPBOX_TOKEN to .env")}
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Stability index — Bloomberg KPI */}
-      <div className="mx-4 mt-4 card-elevated">
+      {/* Stability index */}
+      <div className="mx-4 mt-4 card-elevated animate-fade-up delay-3">
         <div className="section-label">{t("مؤشر الاستقرار السياحي", "Tourism Stability Index")}</div>
         <div className="mt-2 flex items-end gap-3">
           <span className="kpi-giant">8.4</span>
@@ -127,21 +146,23 @@ export default function InvestorMap() {
         </div>
       </div>
 
-      {/* Top opportunity */}
-      <div className="mx-4 mt-3 rounded-2xl p-5 text-white relative overflow-hidden" style={{ background: "hsl(var(--secondary))" }}>
-        <span className="text-[10px] tracking-widest uppercase text-tertiary">{t("الفرصة الأبرز", "Top Opportunity")}</span>
+      {/* Top opportunity — rose gradient */}
+      <div className="mx-4 mt-3 rounded-2xl p-5 text-white relative overflow-hidden animate-fade-up delay-4"
+           style={{ background: "var(--gradient-rose)" }}>
+        <span className="text-[10px] tracking-widest uppercase font-mono" style={{ color: "hsl(var(--gold))" }}>
+          {t("الفرصة الأبرز", "Top Opportunity")}
+        </span>
         <h3 className="font-display text-2xl mt-1">{t(topOpp.nameAr, topOpp.nameEn)}</h3>
         <p className="text-white/80 text-sm mt-1">{t(topOpp.opportunityType.ar, topOpp.opportunityType.en)}</p>
         <div className="mt-3 flex items-center justify-between">
           <span className="text-xs text-white/80">{t("نقاط الأولوية", "Priority Score")}</span>
-          <span className="font-display text-2xl">{topOpp.priorityScore}/10</span>
+          <span className="font-mono text-3xl">{topOpp.priorityScore}<span className="text-base text-white/60">/10</span></span>
         </div>
         <button onClick={() => nav(`/investor/opportunity/${topOpp.id}`)} className="mt-3 w-full bg-tertiary text-primary py-2.5 rounded-lg font-semibold">
           {t("عرض التفاصيل", "View Details")}
         </button>
       </div>
 
-      {/* My Watchlist */}
       {watchedGovs.length > 0 && (
         <section className="px-4 mt-5">
           <h3 className="font-display text-lg mb-2 flex items-center gap-2">
@@ -156,8 +177,8 @@ export default function InvestorMap() {
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-display text-base">{t(gov.nameAr, gov.nameEn)}</span>
                       <span
-                        className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
-                        style={{ background: "hsl(var(--secondary-container))", color: "hsl(var(--secondary-container-foreground))" }}
+                        className="text-[11px] font-mono px-2 py-0.5 rounded-full"
+                        style={{ background: "hsl(var(--gold) / 0.15)", color: "hsl(var(--gold))" }}
                       >
                         {entry.score}
                       </span>
@@ -167,7 +188,8 @@ export default function InvestorMap() {
                     )}
                     <button
                       onClick={() => nav(`/investor/opportunity/${gov.id}`)}
-                      className="mt-2 text-xs font-semibold text-secondary"
+                      className="mt-2 text-xs font-semibold"
+                      style={{ color: "hsl(var(--gold))" }}
                     >
                       {t("عرض التفاصيل →", "View Details →")}
                     </button>
@@ -185,32 +207,30 @@ export default function InvestorMap() {
         </section>
       )}
 
-      {/* Ranking */}
+      {/* Ranking — primitive rank rows */}
       <section className="px-4 mt-5">
         <h3 className="font-display text-lg mb-2">{t("ترتيب الفرص", "Opportunity Ranking")}</h3>
         <div className="space-y-2">
           {top.map((g, i) => {
             const watched = isWatched(g.id);
             return (
-              <div key={g.id} className="w-full card-clean flex items-center gap-3">
-                <button onClick={() => nav(`/investor/opportunity/${g.id}`)} className="flex-1 flex items-center gap-3 text-start min-w-0">
-                  <span className="font-display text-2xl text-secondary w-9 text-center">{String(i+1).padStart(2,"0")}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{t(g.nameAr, g.nameEn)}</div>
-                    <div className="text-xs text-muted-foreground truncate">{t(g.opportunityType.ar, g.opportunityType.en)}</div>
-                    <div className="h-1 bg-muted rounded-full mt-1.5 overflow-hidden">
-                      <div className="h-full" style={{ width: `${g.priorityScore*10}%`, background: oppColor(g.opportunity) }} />
-                    </div>
+              <div key={g.id} className="rank-row" onClick={() => nav(`/investor/opportunity/${g.id}`)}>
+                <span className="rank-num">{String(i + 1).padStart(2, "0")}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="rank-name truncate">{t(g.nameAr, g.nameEn)}</div>
+                  <div className="rank-type truncate">{t(g.opportunityType.ar, g.opportunityType.en)}</div>
+                  <div className="priority-bar-track">
+                    <div className="priority-bar-fill" style={{ width: `${g.priorityScore * 10}%` }} />
                   </div>
-                  <div className="font-display text-base text-primary">{g.priorityScore}</div>
-                </button>
+                </div>
+                <span className="rank-score">{g.priorityScore}</span>
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleWatch(g.id, g.priorityScore); }}
                   aria-label={watched ? "unsave" : "save"}
                   className="material-symbols-outlined"
                   style={{
                     fontSize: 22,
-                    color: watched ? "hsl(var(--tertiary))" : "hsl(var(--muted-foreground))",
+                    color: watched ? "hsl(var(--gold))" : "hsl(var(--muted-foreground))",
                     fontVariationSettings: watched ? "'FILL' 1" : "'FILL' 0",
                   }}
                 >bookmark</button>
@@ -219,7 +239,6 @@ export default function InvestorMap() {
           })}
         </div>
       </section>
-
 
       <div className="px-4 mt-5">
         <button onClick={() => nav("/investor/simulator")} className="btn-primary w-full">
