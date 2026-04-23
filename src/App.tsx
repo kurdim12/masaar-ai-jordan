@@ -27,6 +27,7 @@ import InvestorForecast from "./pages/investor/InvestorForecast";
 import OpportunityDetail from "./pages/investor/OpportunityDetail";
 import InvestmentSimulator from "./pages/investor/InvestmentSimulator";
 import Tenders from "./pages/investor/Tenders";
+import InvestorChat from "./pages/investor/InvestorChat";
 
 import BusinessOnboarding from "./pages/business/BusinessOnboarding";
 import BusinessDashboard from "./pages/business/BusinessDashboard";
@@ -70,6 +71,7 @@ const App = () => (
             <Route path="/investor/opportunity/:id" element={<I><OpportunityDetail /></I>} />
             <Route path="/investor/simulator" element={<I><InvestmentSimulator /></I>} />
             <Route path="/investor/tenders" element={<I><Tenders /></I>} />
+            <Route path="/investor/chat" element={<I><InvestorChat /></I>} />
             <Route path="/investor/profile" element={<I><Profile /></I>} />
 
             <Route path="/business/onboarding" element={<BusinessOnboarding />} />
