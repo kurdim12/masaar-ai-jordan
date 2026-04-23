@@ -1,14 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapContainer, TileLayer, CircleMarker, Tooltip } from "react-leaflet";
-import "@/lib/leafletSetup";
 import { useApp } from "@/context/AppContext";
 import { aiTips, filterTypes, governorates, type GovernorateType } from "@/data/jordan";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
-
-const crowdColor = (c: "high" | "medium" | "low") =>
-  c === "high" ? "hsl(12, 55%, 56%)" : c === "medium" ? "hsl(45, 65%, 55%)" : "hsl(170, 47%, 33%)";
+import mapboxgl from "mapbox-gl";
+import {
+  MAPBOX_TOKEN,
+  WARM_STYLE,
+  JORDAN_CENTER,
+  JORDAN_ZOOM,
+  createTravellerMarker,
+} from "@/lib/mapbox";
 
 export default function TravellerDiscover() {
   const { t, locale } = useApp();
@@ -26,11 +29,53 @@ export default function TravellerDiscover() {
     [filter]
   );
 
+  // === Mapbox map (warm outdoors style) ===
+  const mapEl = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
+
+  useEffect(() => {
+    if (!mapEl.current || mapRef.current || !MAPBOX_TOKEN) return;
+    mapboxgl.accessToken = MAPBOX_TOKEN;
+    const map = new mapboxgl.Map({
+      container: mapEl.current,
+      style: WARM_STYLE,
+      center: JORDAN_CENTER,
+      zoom: JORDAN_ZOOM,
+      attributionControl: false,
+    });
+    mapRef.current = map;
+    return () => { map.remove(); mapRef.current = null; markersRef.current = []; };
+  }, []);
+
+  // Refresh markers on filter change
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
+
+    const addMarkers = () => {
+      filtered.forEach((g) => {
+        const label = locale === "ar" ? g.nameAr : g.nameEn;
+        const el = createTravellerMarker(g.crowd, label);
+        const marker = new mapboxgl.Marker({ element: el, anchor: "bottom" })
+          .setLngLat([g.lng, g.lat])
+          .addTo(map);
+        el.addEventListener("click", () => nav(`/traveller/destination/${g.id}`));
+        markersRef.current.push(marker);
+      });
+    };
+
+    if (map.isStyleLoaded()) addMarkers();
+    else map.once("load", addMarkers);
+  }, [filtered, locale, nav]);
+
   return (
     <AppShell lightMode>
-      <AppHeader />
+      <AppHeader lightMode />
 
-      <div className="px-4 pt-3">
+      <div className="px-4 pt-3 animate-fade-up delay-1">
         <h1 className="font-display text-2xl leading-tight">
           {t("اكتشف الأردن", "Discover Jordan")}
         </h1>
@@ -39,28 +84,21 @@ export default function TravellerDiscover() {
         </p>
       </div>
 
-      <div className="mx-4 mt-3 rounded-2xl overflow-hidden shadow-card border border-border/30 h-[300px] relative">
-        <MapContainer center={[31.5, 36.5]} zoom={7} scrollWheelZoom={false} style={{ height: "100%", width: "100%" }}>
-          <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-            attribution='&copy; OSM &copy; CARTO'
-          />
-          {filtered.map(g => (
-            <CircleMarker
-              key={g.id} center={[g.lat, g.lng]}
-              radius={Math.max(15, Math.min(40, g.visitors / 60000))}
-              pathOptions={{ color: crowdColor(g.crowd), fillColor: crowdColor(g.crowd), fillOpacity: 0.6, weight: 2 }}
-              eventHandlers={{ click: () => nav(`/traveller/destination/${g.id}`) }}
-            >
-              <Tooltip direction="top" offset={[0, -8]} opacity={1}>
-                <span className="font-semibold">{locale === "ar" ? g.nameAr : g.nameEn}</span>
-              </Tooltip>
-            </CircleMarker>
-          ))}
-        </MapContainer>
+      <div className="mx-4 mt-3 rounded-2xl overflow-hidden shadow-card border border-border/30 animate-fade-up delay-2"
+           style={{ height: 220, background: "#e8d9b8" }}>
+        {MAPBOX_TOKEN ? (
+          <div ref={mapEl} style={{ width: "100%", height: "100%" }} />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center text-center px-6">
+            <span className="material-symbols-outlined" style={{ fontSize: 36, color: "hsl(var(--secondary))" }}>map</span>
+            <p className="mt-2 text-sm font-medium">{t("الخريطة تتطلب رمز Mapbox", "Map requires Mapbox token")}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {t("أضف VITE_MAPBOX_TOKEN في .env", "Add VITE_MAPBOX_TOKEN to .env")}
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Filter chips */}
       <div className="mt-4 px-4 overflow-x-auto scrollbar-none">
         <div className="flex gap-2 pb-1">
           {filterTypes.map(f => (
@@ -73,7 +111,6 @@ export default function TravellerDiscover() {
         </div>
       </div>
 
-      {/* AI Tip Banner */}
       <div className="mx-4 mt-4 rounded-2xl p-4 bg-gradient-gold text-primary shadow-gold animate-fade-in" key={tipIdx}>
         <div className="flex items-start gap-2">
           <span className="material-symbols-outlined">auto_awesome</span>
@@ -81,22 +118,21 @@ export default function TravellerDiscover() {
         </div>
       </div>
 
-      {/* Destination cards */}
       <div className="mt-5 px-4 space-y-4">
         <h2 className="font-display text-lg">{t("وجهات مقترحة", "Suggested Destinations")}</h2>
         {filtered.map(g => (
           <button key={g.id} onClick={() => nav(`/traveller/destination/${g.id}`)}
             className="block w-full text-start card-masaar overflow-hidden hover:shadow-elevated transition-shadow">
-            <div className="relative h-[180px]">
+            <div className="relative h-[210px]">
               <img src={g.image} alt={t(g.nameAr, g.nameEn)} className="absolute inset-0 w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-primary/70 to-transparent" />
+              <div className="absolute inset-0 destination-card-overlay" />
               <span className={`absolute top-3 ${locale==="ar"?"right-3":"left-3"} chip text-xs ${
                 g.crowd === "high" ? "badge-crowd-high" : g.crowd === "medium" ? "badge-crowd-medium" : "badge-crowd-low"
               }`}>
                 {g.crowd === "high" ? t("مزدحم", "High") : g.crowd === "medium" ? t("متوسط", "Medium") : t("هادئ", "Quiet")}
               </span>
               <div className={`absolute bottom-3 ${locale==="ar"?"right-3":"left-3"} text-white`}>
-                <h3 className="font-display text-2xl">{t(g.nameAr, g.nameEn)}</h3>
+                <h3 className="destination-card-title">{t(g.nameAr, g.nameEn)}</h3>
               </div>
             </div>
             <div className="p-4">

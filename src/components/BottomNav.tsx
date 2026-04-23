@@ -29,43 +29,27 @@ export const BottomNav = () => {
         ];
 
   return (
-    <nav
-      className="fixed bottom-0 inset-x-0 z-40 pb-[env(safe-area-inset-bottom)] glass"
-      style={{ borderTop: "1px solid rgba(200,168,130,0.15)" }}
-    >
-      <div className="max-w-md mx-auto grid grid-cols-4 h-16">
+    <nav className="fixed bottom-0 inset-x-0 z-40 pb-[env(safe-area-inset-bottom)] bottom-nav">
+      <div className="max-w-md mx-auto grid grid-cols-4" style={{ height: 72 }}>
         {items.map((it) => {
           const active = loc.pathname.startsWith(it.to);
           return (
             <NavLink
               key={it.to}
               to={it.to}
-              className="relative flex flex-col items-center justify-center gap-0.5"
+              className={`nav-item ${active ? "active" : ""}`}
+              data-active={active}
             >
-              {active && (
-                <span
-                  className="absolute top-0 h-[2px] w-8 rounded-full"
-                  style={{ background: "var(--gradient-gold)" }}
-                />
-              )}
               <span
                 className="material-symbols-outlined transition-all"
                 style={{
                   fontSize: 22,
-                  color: active ? "hsl(var(--gold))" : "hsl(var(--muted-foreground) / 0.6)",
                   fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0",
                 }}
               >
                 {it.icon}
               </span>
-              <span
-                className="text-[10px] font-medium tracking-wide"
-                style={{
-                  color: active ? "hsl(var(--gold))" : "hsl(var(--muted-foreground) / 0.6)",
-                }}
-              >
-                {t(it.ar, it.en)}
-              </span>
+              <span className="nav-label">{t(it.ar, it.en)}</span>
             </NavLink>
           );
         })}

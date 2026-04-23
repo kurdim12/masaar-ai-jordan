@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "@/context/AppContext";
 
@@ -11,36 +11,75 @@ export default function Splash() {
     return () => clearTimeout(timer);
   }, [nav]);
 
+  // 70 random star particles
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 70 }, () => ({
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: 0.5 + Math.random() * 2,
+        opacity: 0.1 + Math.random() * 0.75,
+        delay: Math.random() * 2,
+      })),
+    []
+  );
+
   return (
     <div className="fixed inset-0 overflow-hidden" style={{ background: "hsl(var(--void))" }}>
-      <img
-        src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1600&q=80"
-        alt="Wadi Rum desert at dusk — Masaar"
-        className="absolute inset-0 w-full h-full object-cover scale-110 animate-fade-in-slow"
-        style={{ opacity: 0.55 }}
-      />
+      {/* Particle field */}
+      <div className="absolute inset-0">
+        {particles.map((p, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-white animate-fade-in-slow"
+            style={{
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              opacity: p.opacity,
+              animationDelay: `${p.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Subtle radial vignette */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(10,22,40,0.4) 0%, rgba(10,22,40,0.7) 60%, rgba(10,22,40,0.96) 100%)",
+            "radial-gradient(ellipse at center, transparent 0%, rgba(7,16,28,0.6) 75%, rgba(7,16,28,0.95) 100%)",
         }}
       />
-      <div className="relative h-full flex flex-col items-center justify-center text-center px-8 animate-fade-in">
+
+      <div className="relative h-full flex flex-col items-center justify-center text-center px-8">
         <div
-          className="font-display text-white text-6xl tracking-[0.25em] font-medium"
-          style={{ textShadow: "0 4px 24px rgba(0,0,0,0.4)" }}
+          className="font-display text-white animate-fade-up delay-1"
+          style={{
+            fontSize: 52,
+            letterSpacing: "0.22em",
+            textShadow: "0 4px 28px rgba(0,0,0,0.5)",
+          }}
         >
           MASAAR
         </div>
         <div
-          className="mt-4 text-[10px] tracking-[0.4em] font-semibold"
-          style={{ color: "hsl(var(--gold))" }}
+          className="mt-5 animate-fade-up delay-2"
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 11,
+            letterSpacing: "0.18em",
+            color: "hsl(var(--gold))",
+          }}
         >
           {t("مسار — الذكاء السياحي", "JORDAN TOURISM INTELLIGENCE")}
         </div>
-        <div className="mt-12 w-12 h-px" style={{ background: "hsl(var(--gold) / 0.6)" }} />
-        <div className="mt-8">
+        <div
+          className="mt-12 w-12 h-px animate-fade-up delay-3"
+          style={{ background: "hsl(var(--gold) / 0.6)" }}
+        />
+        <div className="mt-8 animate-fade-up delay-4">
           <div className="loading-dots">
             <span /><span /><span />
           </div>
