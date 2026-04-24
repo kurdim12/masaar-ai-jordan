@@ -21,12 +21,15 @@ import TravellerMap from "./pages/traveller/TravellerMap";
 import GovernorateDetail from "./pages/traveller/GovernorateDetail";
 import TripPlanner from "./pages/traveller/TripPlanner";
 import TravellerChat from "./pages/traveller/TravellerChat";
+import TravellerCart from "./pages/traveller/TravellerCart";
 
 import InvestorMap from "./pages/investor/InvestorMap";
 import InvestorForecast from "./pages/investor/InvestorForecast";
 import OpportunityDetail from "./pages/investor/OpportunityDetail";
 import InvestmentSimulator from "./pages/investor/InvestmentSimulator";
 import Tenders from "./pages/investor/Tenders";
+import TenderDetail from "./pages/investor/TenderDetail";
+import TenderSubmission from "./pages/investor/TenderSubmission";
 import InvestorChat from "./pages/investor/InvestorChat";
 
 import BusinessOnboarding from "./pages/business/BusinessOnboarding";
@@ -34,6 +37,7 @@ import BusinessDashboard from "./pages/business/BusinessDashboard";
 import FlashOffer from "./pages/business/FlashOffer";
 import EmergencyOffer from "./pages/business/EmergencyOffer";
 import BusinessAnalytics from "./pages/business/BusinessAnalytics";
+import BusinessBookings from "./pages/business/BusinessBookings";
 import BusinessChat from "./pages/business/BusinessChat";
 
 const queryClient = new QueryClient();
@@ -63,6 +67,7 @@ const App = () => (
             <Route path="/traveller/map" element={<T><TravellerMap /></T>} />
             <Route path="/traveller/destination/:id" element={<T><GovernorateDetail /></T>} />
             <Route path="/traveller/plan" element={<T><TripPlanner /></T>} />
+            <Route path="/traveller/cart" element={<T><TravellerCart /></T>} />
             <Route path="/traveller/chat" element={<T><TravellerChat /></T>} />
             <Route path="/traveller/profile" element={<T><Profile /></T>} />
 
@@ -71,6 +76,8 @@ const App = () => (
             <Route path="/investor/opportunity/:id" element={<I><OpportunityDetail /></I>} />
             <Route path="/investor/simulator" element={<I><InvestmentSimulator /></I>} />
             <Route path="/investor/tenders" element={<I><Tenders /></I>} />
+            <Route path="/investor/tenders/:id" element={<I><TenderDetail /></I>} />
+            <Route path="/investor/tenders/submit/:id" element={<I><TenderSubmission /></I>} />
             <Route path="/investor/chat" element={<I><InvestorChat /></I>} />
             <Route path="/investor/profile" element={<I><Profile /></I>} />
 
@@ -79,6 +86,7 @@ const App = () => (
             <Route path="/business/offer" element={<B><FlashOffer /></B>} />
             <Route path="/business/emergency" element={<B><EmergencyOffer /></B>} />
             <Route path="/business/analytics" element={<B><BusinessAnalytics /></B>} />
+            <Route path="/business/bookings" element={<B><BusinessBookings /></B>} />
             <Route path="/business/chat" element={<B><BusinessChat /></B>} />
             <Route path="/business/profile" element={<B><Profile /></B>} />
 
