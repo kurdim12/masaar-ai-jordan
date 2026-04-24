@@ -38,6 +38,13 @@ export default function ChoosePath() {
   const { t, setUserType, setLocale, setInvestorProfile, setBusinessProfile } = useApp();
   const nav = useNavigate();
 
+  const onTravellerDemo = () => {
+    setLocale("en");
+    setUserType("traveller");
+    toast.success("Welcome, explorer 🗺️");
+    nav("/traveller/onboarding");
+  };
+
   const onInvestorDemo = () => {
     loadInvestorDemo();
     setLocale("ar");
@@ -87,11 +94,11 @@ export default function ChoosePath() {
         <div className="space-y-4">
           {cards.map((c, idx) => {
             const demo =
-              c.type === "investor"
+              c.type === "traveller"
+                ? { onClick: onTravellerDemo, name: "Alex & Sara", role: "First visit to Jordan" }
+                : c.type === "investor"
                 ? { onClick: onInvestorDemo, name: "خالد المحاميد", role: "مستثمر أردني" }
-                : c.type === "business"
-                ? { onClick: onBusinessDemo, name: "Nour Alkhatib", role: "Petra Guesthouse" }
-                : null;
+                : { onClick: onBusinessDemo, name: "Nour Alkhatib", role: "Petra Guesthouse" };
             return (
               <div key={c.type} className="space-y-2 animate-fade-in" style={{ animationDelay: `${idx * 80}ms` }}>
                 <button

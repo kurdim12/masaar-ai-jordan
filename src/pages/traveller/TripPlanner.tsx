@@ -4,7 +4,7 @@ import { governorates } from "@/data/jordan";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
 import { toast } from "sonner";
-import { completeChat } from "@/lib/aiChat";
+import { callGemini } from "@/lib/gemini";
 
 interface DayPlan {
   day: number;
@@ -25,7 +25,7 @@ const fallbackDay = (i: number, name: string): DayPlan => ({
 });
 
 export default function TripPlanner() {
-  const { t, locale, travellerProfile } = useApp();
+  const { t, locale, travellerProfile, geminiKey } = useApp();
   const [selected, setSelected] = useState<string[]>([]);
   const [days, setDays] = useState(3);
   const [stage, setStage] = useState<"pick" | "loading" | "result">("pick");
@@ -53,9 +53,11 @@ Return ONLY valid JSON, no markdown, no commentary, in this exact shape:
 {"days":[{"day":1,"title":"","morning":"","afternoon":"","evening":"","tip":""}]}`;
 
     try {
-      const raw = await completeChat({
+      const raw = await callGemini({
+        apiKey: geminiKey,
         systemPrompt: "You are Masaar AI, a Jordan tourism expert. Output only strict JSON matching the requested schema. No markdown fences.",
-        messages: [{ role: "user", content: userPrompt }],
+        history: [],
+        userMessage: userPrompt,
       });
 
       // Strip code fences if model added them

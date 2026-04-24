@@ -28,12 +28,19 @@ const budgets = [
 ];
 
 export default function TravellerOnboarding() {
-  const { t, travellerProfile, setTravellerProfile } = useApp();
+  const { t, travellerProfile, setTravellerProfile, setUserType } = useApp();
   const nav = useNavigate();
   const [step, setStep] = useState(0);
   const total = 5;
 
-  const next = () => step < total - 1 ? setStep(s => s + 1) : nav("/traveller/discover");
+  const next = () => {
+    if (step < total - 1) {
+      setStep(s => s + 1);
+    } else {
+      setUserType("traveller");
+      nav("/traveller/discover");
+    }
+  };
   const prev = () => step > 0 ? setStep(s => s - 1) : nav("/path");
 
   const toggleInterest = (id: string) => {

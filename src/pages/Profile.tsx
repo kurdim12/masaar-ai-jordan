@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import { AppShell } from "@/components/AppShell";
 import { AppHeader } from "@/components/AppHeader";
@@ -15,11 +15,14 @@ const roleLabel = (u: string | null) => {
 };
 
 export default function Profile() {
-  const { t, userType, clearUserType } = useApp();
+  const { t, userType, clearUserType, geminiKey, setGeminiKey } = useApp();
   const nav = useNavigate();
   const role = roleLabel(userType);
   const demo = isDemoMode();
   const [email, setEmail] = useState<string | null>(null);
+  const [keyInput, setKeyInput] = useState(geminiKey);
+  const [showKey, setShowKey] = useState(false);
+  const keyRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setEmail(data.session?.user.email ?? null));
@@ -112,21 +115,61 @@ export default function Profile() {
           )}
         </section>
 
-        {/* AI status */}
-        <div className="card-clean">
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-tertiary">auto_awesome</span>
-            <div className="flex-1">
-              <div className="text-[14px] font-medium text-primary">
-                {t("الذكاء الاصطناعي مُفعّل", "AI is active")}
+        {/* Gemini AI key */}
+        <section className="space-y-3">
+          <h2 className="font-display text-[16px] text-primary font-semibold">{t("الذكاء الاصطناعي", "AI Settings")}</h2>
+          <div className="card-clean space-y-3">
+            <div className="flex items-center gap-3">
+              <span className="material-symbols-outlined text-tertiary">auto_awesome</span>
+              <div className="flex-1">
+                <div className="text-[14px] font-medium text-primary">
+                  {geminiKey ? t("Gemini مُفعّل ✓", "Gemini Active ✓") : t("وضع تجريبي", "Demo Mode")}
+                </div>
+                <div className="text-[12px] text-muted-foreground mt-0.5">
+                  {geminiKey
+                    ? t("ردود ذكاء اصطناعي كاملة مفعّلة", "Full AI responses enabled")
+                    : t("أضف مفتاح Gemini لردود أذكى", "Add Gemini key for smarter replies")}
+                </div>
               </div>
-              <div className="text-[12px] text-muted-foreground mt-0.5">
-                {t("مدعوم بـ Lovable AI — لا حاجة لمفتاح", "Powered by Lovable AI — no key needed")}
-              </div>
+              <span className={`w-2 h-2 rounded-full ${geminiKey ? "bg-success" : "bg-muted-foreground"}`} />
             </div>
-            <span className="w-2 h-2 rounded-full bg-success" />
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <input
+                  ref={keyRef}
+                  type={showKey ? "text" : "password"}
+                  value={keyInput}
+                  onChange={e => setKeyInput(e.target.value)}
+                  placeholder="AIza..."
+                  className="w-full text-[13px] bg-background border border-border rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-primary pr-9"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowKey(v => !v)}
+                  className="absolute inset-y-0 end-2 flex items-center text-muted-foreground"
+                >
+                  <span className="material-symbols-outlined text-[18px]">{showKey ? "visibility_off" : "visibility"}</span>
+                </button>
+              </div>
+              <button
+                onClick={() => {
+                  setGeminiKey(keyInput.trim());
+                  toast.success(keyInput.trim() ? t("تم حفظ المفتاح", "Key saved") : t("تم مسح المفتاح", "Key cleared"));
+                }}
+                className="px-3 py-2 rounded-lg text-[13px] font-semibold"
+                style={{ background: "hsl(var(--secondary))", color: "white" }}
+              >
+                {t("حفظ", "Save")}
+              </button>
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-snug">
+              {t(
+                "احصل على مفتاحك المجاني من Google AI Studio. لا يُخزَّن إلا على جهازك.",
+                "Get your free key from Google AI Studio. Stored only on your device."
+              )}
+            </p>
           </div>
-        </div>
+        </section>
 
         {/* Switch role */}
         <section className="space-y-3">
